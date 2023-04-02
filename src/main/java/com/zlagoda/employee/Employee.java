@@ -1,22 +1,25 @@
 package com.zlagoda.employee;
 
+import com.zlagoda.helpers.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.util.Date;
 
 @Data
 @Builder
 @AllArgsConstructor
-public class Employee {
+public class Employee implements Entity {
 
     private String id;
+    private String username;
+    private String password;
     private String surname;
     private String name;
     private String patronymic;
-    private String role;
+    private EmployeeRole role;
     private BigDecimal salary;
     private Date dateOfBirth;
     private Date dateOfStart;
