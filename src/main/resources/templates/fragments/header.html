@@ -6,8 +6,11 @@
         <link href="/webjars/bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet"
               type="text/css"/>
         <script src="/webjars/bootstrap/5.2.3/js/bootstrap.min.js"></script>
+        <script src="/webjars/jquery/3.6.4/jquery.min.js"></script>
+        <script src="/webjars/npm/2.9.3/popper.js/popper.min.js" type="text/javascript"></script>
 
-        <link href="../../css/main.css" rel="stylesheet"
+
+        <link href="../../static/css/main.css" rel="stylesheet"
               th:href="@{/css/main.css}"/>
     </div>
 </head>
@@ -27,6 +30,8 @@
         </div>
     </nav>
 </div>
+
+<div th:replace="fragments/footer :: footer"></div>
 
 </body>
 </html>
