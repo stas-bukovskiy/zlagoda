@@ -33,6 +33,12 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
 
     implementation("org.webjars:bootstrap:5.2.3")
+    implementation("org.webjars:popper.js:2.9.3")
+    implementation("org.webjars:jquery:3.6.4")
+    implementation("org.webjars:webjars-locator:0.46")
+
+    implementation("org.springframework.boot:spring-boot-starter-validation:3.0.5")
+    implementation("org.modelmapper:modelmapper:3.1.1")
 
 }
 
