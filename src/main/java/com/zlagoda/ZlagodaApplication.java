@@ -1,4 +1,4 @@
-package com.zlagod;
+package com.zlagoda;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

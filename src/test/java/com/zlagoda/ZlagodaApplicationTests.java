@@ -1,4 +1,4 @@
-package com.zlagod;
+package com.zlagoda;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
