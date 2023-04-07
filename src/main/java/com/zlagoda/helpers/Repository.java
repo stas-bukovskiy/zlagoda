@@ -13,4 +13,6 @@ public interface Repository<E extends Entity, ID> {
     E save(E e);
 
     Optional<E> deleteById(ID id);
+
+    void deleteAll();
 }

@@ -26,7 +26,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 
     @Override
     public Optional<Employee> findById(String id) {
-        String sql = "SELECT * FROM employee WHERE id = ?";
+        String sql = "SELECT * FROM employee WHERE id_employee = ?";
         List<Employee> employees = jdbcTemplate.query(sql, new Object[]{id}, rowMapper);
         return employees.isEmpty() ? Optional.empty() : Optional.of(employees.get(0));
     }
@@ -37,7 +37,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
             employee.setId(idGenerator.generate());
             employee.setPassword(passwordEncoder.encode(employee.getPassword()));
         }
-        String sql = "INSERT INTO employee (id, username, password, surname, name, patronymic, role, salary, date_of_birth, date_of_start, phone_number, city, street, zip_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO employee (id_employee, empl_username, empl_password, empl_surname, empl_name, empl_patronymic, empl_role, salary, date_of_birth, date_of_start, phone_number, city, street, zip_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
                 employee.getId(),
                 employee.getUsername(),
@@ -60,9 +60,15 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     public Optional<Employee> deleteById(String id) {
         Optional<Employee> employeeOptional = findById(id);
         if (employeeOptional.isPresent()) {
-            String sql = "DELETE FROM employee WHERE id = ?";
+            String sql = "DELETE FROM employee WHERE id_employee = ?";
             jdbcTemplate.update(sql, id);
         }
         return employeeOptional;
+    }
+
+    @Override
+    public void deleteAll() {
+        String sql = "DELETE FROM employee";
+        jdbcTemplate.update(sql);
     }
 }

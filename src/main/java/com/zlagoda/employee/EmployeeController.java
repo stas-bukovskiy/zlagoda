@@ -17,7 +17,7 @@ public class EmployeeController {
     @GetMapping
     public String listEmployees(Model model) {
         model.addAttribute("employees",
-                employeeService.getAll(Sort.by("name")));
+                employeeService.getAll(Sort.by("empl_name")));
         return "employees/list";
     }
 
