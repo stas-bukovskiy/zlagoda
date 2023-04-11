@@ -1,11 +1,15 @@
 package com.zlagoda.employee;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+import static com.zlagoda.employee.EmployeeServiceImpl.DEFAULT_SORT;
+
+@Controller
 @RequestMapping("/employee")
 @RequiredArgsConstructor
 public class EmployeeController {
@@ -16,8 +20,7 @@ public class EmployeeController {
     // List all employees
     @GetMapping
     public String listEmployees(Model model) {
-        model.addAttribute("employees",
-                employeeService.getAll(Sort.by("empl_name")));
+        model.addAttribute("employees", employeeService.getAll(DEFAULT_SORT));
         return "employees/list";
     }
 
@@ -25,11 +28,21 @@ public class EmployeeController {
     @GetMapping("/new")
     public String createEmployeeForm(Model model) {
         model.addAttribute("employee", new EmployeeDto());
+        addDefaultAttributes(model);
         return "employees/new";
     }
 
     @PostMapping("/new")
-    public String createEmployee(@ModelAttribute EmployeeDto employeeDto) {
+    public String createEmployee(@ModelAttribute @Valid EmployeeDto employeeDto,
+                                 BindingResult bindingResult, Model model) {
+        if (employeeDto.getPassword() == null || employeeDto.getPassword().length() < 6)
+            bindingResult.rejectValue("password", "", "password must be between 6 and 50 characters");
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("employee", employeeDto);
+            addDefaultAttributes(model);
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            return "employees/new";
+        }
         employeeService.create(employeeDto);
         return "redirect:/employees";
     }
@@ -37,23 +50,46 @@ public class EmployeeController {
     // Update an existing employee
     @GetMapping("/edit/{id}")
     public String editEmployeeForm(@PathVariable String id, Model model) {
-        Employee employee = employeeService.getById(id);
-        model.addAttribute("employee", employee);
+        EmployeeDto employeeDto = employeeService.getById(id);
+        model.addAttribute("employee", employeeDto);
+        addDefaultAttributes(model);
         return "employees/edit";
     }
 
     @PostMapping("/edit/{id}")
-    public String updateEmployee(@PathVariable String id, @ModelAttribute EmployeeDto employeeDTO) {
-        employeeService.update(id, employeeDTO);
-        return "redirect:/employees";
+    public String updateEmployee(@PathVariable String id, @ModelAttribute @Valid EmployeeDto employeeDto,
+                                 BindingResult bindingResult, Model model) {
+        if (!isPasswordValid(employeeDto.getPassword()))
+            bindingResult.rejectValue("password", "", "password must be between 6 and 50 characters");
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("employee", employeeDto);
+            addDefaultAttributes(model);
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            return "employees/edit";
+        }
+        employeeService.update(id, employeeDto);
+        return "redirect:/employee";
+    }
+
+    private boolean isPasswordValid(String password) {
+        return password == null || password.equals("") || password.length() >= 6;
     }
 
     // Delete an employee
     @GetMapping("/delete/{id}")
     public String deleteEmployee(@PathVariable String id) {
         employeeService.deleteById(id);
-        return "redirect:/employees";
+        return "redirect:/employee";
     }
+
+
+    private void addDefaultAttributes(Model model) {
+        model.addAttribute("roles", employeeService.getRoles());
+        model.addAttribute("cities", employeeService.getCities());
+        model.addAttribute("streets", employeeService.getStreets());
+        model.addAttribute("zipCodes", employeeService.getZipCodes());
+    }
+
 
 }
 

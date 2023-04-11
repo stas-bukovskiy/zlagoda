@@ -8,13 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.stream.Stream;
 
@@ -25,7 +23,6 @@ import java.util.stream.Stream;
 public class DataDevInitializer {
 
     private final EmployeeRepository repository;
-    private final PasswordEncoder passwordEncoder;
 
     public static Date parseDate(String date) {
         try {
@@ -35,35 +32,22 @@ public class DataDevInitializer {
         }
     }
 
-    public static Date getDateTime(int year, int month, int day, int hour) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, year);
-        cal.set(Calendar.MONTH, month);
-        cal.set(Calendar.DAY_OF_MONTH, day);
-        cal.set(Calendar.HOUR_OF_DAY, day);
-        cal.set(Calendar.MINUTE, hour);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-
-        return cal.getTime();
-    }
-
     @EventListener(value = ApplicationReadyEvent.class)
     public void initEmployees() {
-        log.info("[DATA_INITIALIZER] start employee data initialization...");
-        Calendar calendar = Calendar.getInstance();
+        log.debug("[DATA_INITIALIZER] start employee data initialization...");
+        repository.deleteAll();
         Stream.of(
                         new Employee(
                                 null,
                                 "manager",
-                                passwordEncoder.encode("password"),
+                                "password",
                                 "surname",
                                 "name",
                                 "patronymic",
                                 EmployeeRole.MANAGER,
                                 BigDecimal.valueOf(758),
                                 parseDate("2001-02-14"),
-                                getDateTime(2022, 10, 23, 9),
+                                parseDate("2014-02-14"),
                                 "+380981714821",
                                 "city",
                                 "street",
@@ -72,14 +56,14 @@ public class DataDevInitializer {
                         new Employee(
                                 null,
                                 "cashier",
-                                passwordEncoder.encode("password"),
+                                "password",
                                 "surname 1",
                                 "name 1",
                                 "patronymic 1",
                                 EmployeeRole.CASHIER,
                                 BigDecimal.valueOf(758),
                                 parseDate("1999-07-21"),
-                                getDateTime(2019, 10, 23, 9),
+                                parseDate("2015-89-12"),
                                 "+380981714821",
                                 "city 1",
                                 "street 1",
@@ -87,8 +71,8 @@ public class DataDevInitializer {
                         )
                 )
                 .peek(repository::save)
-                .peek(employee -> log.debug("[DATA_INITIALIZER] saved: {}", employee));
-        log.info("[DATA_INITIALIZER] done initialization...");
+                .forEach(employee -> log.debug("[DATA_INITIALIZER] saved: {}", employee));
+        log.debug("[DATA_INITIALIZER] done initialization...");
     }
 
 
