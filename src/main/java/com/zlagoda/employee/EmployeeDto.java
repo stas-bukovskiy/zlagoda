@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 @Data
 @Builder
@@ -18,58 +17,57 @@ import java.util.Date;
 @NoArgsConstructor
 public class EmployeeDto implements DTO {
 
-    @Max(10)
     private String id;
 
-    @NotNull
-    @Size(min = 3, max = 100)
+    @NotNull(message = "username can not be null")
+    @Size(min = 3, max = 100, message = "username must be between 3 and 100 characters")
     private String username;
 
-    @NotNull
-    @Size(min = 6, max = 50)
+    @Nullable
+    @Size(max = 50, message = "password must be between 6 and 50 characters")
     private String password;
 
-    @NotNull
-    @Max(50)
+    @NotNull(message = "surname can not be null")
+    @Size(max = 50, message = "surname length cannot be larger than 50 characters")
     private String surname;
 
-    @NotNull
-    @Max(50)
+    @NotNull(message = "name can not be null")
+    @Size(max = 50, message = "name length cannot be larger than 50 characters")
     private String name;
 
     @Nullable
-    @Max(50)
+    @Size(max = 50, message = "patronymic length cannot be larger than 50 characters")
     private String patronymic;
 
-    @NotNull
-    private EmployeeRole role;
+    @NotNull(message = "role can not be null")
+    private String role;
 
-    @NotNull
+    @NotNull(message = "salary can not be null")
     @Digits(integer = 13, fraction = 4)
-    @DecimalMin("0.0")
+    @DecimalMin(value = "0.0", message = "salary must be larger than 0.0")
     private BigDecimal salary;
 
-    @NotNull
+    @NotNull(message = "date of birth can not be null")
     @BirthDate
-    private Date dateOfBirth;
+    private String dateOfBirth;
 
-    @NotNull
-    private Date dateOfStart;
+    @NotNull(message = "date of start can not be null")
+    private String dateOfStart;
 
-    @NotNull
-    @Pattern(regexp = "^\\+?\\d{10,13}$\n")
+    @NotNull(message = "phone number can not be null")
+    @Pattern(regexp = "^\\+?\\d{10,13}$", message = "phone number can be as example: '+380123456789")
     private String phoneNumber;
 
-    @NotNull
-    @Max(50)
+    @NotNull(message = "city can not be null")
+    @Size(max = 50, message = "city length cannot be larger than 50 characters")
     private String city;
 
-    @NotNull
-    @Max(50)
+    @NotNull(message = "street can not be null")
+    @Size(max = 50, message = "street length cannot be larger than 50 characters")
     private String street;
 
-    @NotNull
-    @Max(9)
+    @NotNull(message = "zip code can not be null")
+    @Size(max = 9, message = "zip code length cannot be larger than 9 characters")
     private String zipCode;
 
 }
