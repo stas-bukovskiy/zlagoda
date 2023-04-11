@@ -2,7 +2,7 @@ CREATE TABLE Employee
 (
     id_employee     VARCHAR(10)    NOT NULL,
     empl_username   VARCHAR(100)   NOT NULL,
-    empl_password   VARCHAR(100)    NOT NULL,
+    empl_password   VARCHAR(1000)  NOT NULL,
     empl_surname    VARCHAR(50)    NOT NULL,
     empl_name       VARCHAR(50)    NOT NULL,
     empl_patronymic VARCHAR(50),
