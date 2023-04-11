@@ -4,69 +4,76 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
+    public final static Sort DEFAULT_SORT = Sort.by("empl_name");
+
     private final EmployeeRepository repository;
+    private final EmployeeConverter converter;
 
     @Override
-    public List<Employee> getAll(Sort sort) {
-        return repository.findAll(sort);
+    public List<EmployeeDto> getAll(Sort sort) {
+        return repository.findAll(sort)
+                .stream()
+                .map(converter::convertToDto)
+                .toList();
     }
 
     @Override
-    public Employee getById(String id) {
+    public EmployeeDto getById(String id) {
         return repository.findById(id)
+                .map(converter::convertToDto)
                 .orElseThrow(EmployeeNotFoundException::new);
     }
 
     @Override
-    public Employee create(EmployeeDto employeeDto) {
-        return repository.save(
-                new Employee(
-                        null,
-                        employeeDto.getUsername(),
-                        employeeDto.getPassword(),
-                        employeeDto.getSurname(),
-                        employeeDto.getName(),
-                        employeeDto.getPatronymic(),
-                        employeeDto.getRole(),
-                        employeeDto.getSalary(),
-                        employeeDto.getDateOfBirth(),
-                        employeeDto.getDateOfStart(),
-                        employeeDto.getPhoneNumber(),
-                        employeeDto.getCity(),
-                        employeeDto.getStreet(),
-                        employeeDto.getZipCode()
-                )
-        );
+    public EmployeeDto create(EmployeeDto employeeDto) {
+        Employee employeeToCreate = converter.convertToEntity(employeeDto);
+        Employee createdEmployee = repository.save(employeeToCreate);
+        return converter.convertToDto(createdEmployee);
     }
 
     @Override
-    public Employee update(String id, EmployeeDto employeeDto) {
-        Employee employeeToUpdate = getById(id);
-        employeeToUpdate.setUsername(employeeDto.getUsername());
-        employeeToUpdate.setPassword(employeeDto.getPassword());
-        employeeToUpdate.setSurname(employeeDto.getSurname());
-        employeeToUpdate.setName(employeeDto.getName());
-        employeeToUpdate.setPatronymic(employeeDto.getPatronymic());
-        employeeToUpdate.setRole(employeeDto.getRole());
-        employeeToUpdate.setSalary(employeeDto.getSalary());
-        employeeToUpdate.setDateOfBirth(employeeDto.getDateOfBirth());
-        employeeToUpdate.setDateOfStart(employeeDto.getDateOfStart());
-        employeeToUpdate.setPhoneNumber(employeeDto.getPhoneNumber());
-        employeeToUpdate.setCity(employeeDto.getCity());
-        employeeToUpdate.setStreet(employeeDto.getStreet());
-        employeeToUpdate.setZipCode(employeeDto.getZipCode());
-        return repository.save(employeeToUpdate);
+    public EmployeeDto update(String id, EmployeeDto employeeDto) {
+        if (!repository.existsById(id))
+            throw new EmployeeNotFoundException();
+        Employee employeeToUpdate = converter.convertToEntity(employeeDto);
+        if (employeeDto.getPassword() != null && !employeeDto.getPassword().equals(""))
+            repository.updatePasswordById(id, employeeToUpdate.getPassword());
+        Employee updatedEmployee = repository.update(id, employeeToUpdate);
+        return converter.convertToDto(updatedEmployee);
     }
 
     @Override
-    public Employee deleteById(String id) {
+    public EmployeeDto deleteById(String id) {
         return repository.deleteById(id)
+                .map(converter::convertToDto)
                 .orElseThrow(EmployeeNotFoundException::new);
+    }
+
+    @Override
+    public List<EmployeeRole> getRoles() {
+        return Arrays.stream(EmployeeRole.values())
+                .toList();
+    }
+
+    @Override
+    public List<String> getCities() {
+        return repository.findAllDistinctCities();
+    }
+
+    @Override
+    public List<String> getStreets() {
+        return repository.findAllDistinctStreets();
+    }
+
+    @Override
+    public List<String> getZipCodes() {
+        return repository.findAllDistinctZipCodes();
     }
 }
