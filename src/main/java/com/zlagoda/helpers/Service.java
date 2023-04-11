@@ -4,14 +4,14 @@ import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
-public interface Service<E extends Entity, ID, D extends DTO> {
-    List<E> getAll(Sort sort);
+public interface Service<ID, D extends DTO> {
+    List<D> getAll(Sort sort);
 
-    E getById(ID id);
+    D getById(ID id);
 
-    E create(D d);
+    D create(D d);
 
-    E update(ID id, D D);
+    D update(ID id, D D);
 
-    E deleteById(ID id);
+    D deleteById(ID id);
 }
