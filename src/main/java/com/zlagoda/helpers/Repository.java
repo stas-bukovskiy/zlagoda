@@ -12,6 +12,8 @@ public interface Repository<E extends Entity, ID> {
 
     E save(E e);
 
+    E update(ID id, E e);
+
     Optional<E> deleteById(ID id);
 
     void deleteAll();
