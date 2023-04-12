@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EmployeeRepository extends Repository<Employee, String> {
+    boolean existsByUsername(String username);
+
     Optional<Employee> findByUsername(String username);
 
     void updatePasswordById(String id, String password);
@@ -17,4 +19,6 @@ public interface EmployeeRepository extends Repository<Employee, String> {
     List<String> findAllDistinctStreets();
 
     List<String> findAllDistinctZipCodes();
+
+    boolean existsByUsernameAndIdIsNot(String username, String id);
 }

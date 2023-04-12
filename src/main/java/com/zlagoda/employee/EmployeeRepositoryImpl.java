@@ -94,6 +94,17 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     }
 
     @Override
+    public boolean existsByUsername(String username) {
+        String sql = "SELECT COUNT(*) FROM employee WHERE empl_username = ?";
+        try {
+            int count = jdbcTemplate.queryForObject(sql, Integer.class, username);
+            return count > 0;
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
+
+    @Override
     public Optional<Employee> findByUsername(String username) {
         String sql = "SELECT * FROM employee WHERE empl_username = ?";
         List<Employee> employees = jdbcTemplate.query(sql, rowMapper, username);
@@ -117,7 +128,6 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
         } catch (NullPointerException e) {
             return false;
         }
-
     }
 
     @Override
@@ -136,5 +146,16 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     public List<String> findAllDistinctZipCodes() {
         String sql = "SELECT DISTINCT zip_code FROM employee";
         return jdbcTemplate.queryForList(sql, String.class);
+    }
+
+    @Override
+    public boolean existsByUsernameAndIdIsNot(String username, String id) {
+        String sql = "SELECT COUNT(*) FROM employee WHERE empl_username = ? AND id_employee != ?";
+        try {
+            int count = jdbcTemplate.queryForObject(sql, Integer.class, username, id);
+            return count > 0;
+        } catch (NullPointerException e) {
+            return false;
+        }
     }
 }

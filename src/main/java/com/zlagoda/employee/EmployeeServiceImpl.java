@@ -76,4 +76,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<String> getZipCodes() {
         return repository.findAllDistinctZipCodes();
     }
+
+    @Override
+    public boolean isUsernameUniqueToCreate(String username) {
+        return !repository.existsByUsername(username);
+    }
+
+    @Override
+    public boolean isUsernameUniqueToUpdate(String id, String username) {
+        return !repository.existsByUsernameAndIdIsNot(username, id);
+    }
 }

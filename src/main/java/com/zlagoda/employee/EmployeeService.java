@@ -12,4 +12,8 @@ public interface EmployeeService extends Service<String, EmployeeDto> {
     List<String> getStreets();
 
     List<String> getZipCodes();
+
+    boolean isUsernameUniqueToCreate(String username);
+
+    boolean isUsernameUniqueToUpdate(String id, String username);
 }

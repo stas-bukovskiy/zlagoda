@@ -35,6 +35,9 @@ public class EmployeeController {
     @PostMapping("/new")
     public String createEmployee(@ModelAttribute @Valid EmployeeDto employeeDto,
                                  BindingResult bindingResult, Model model) {
+        if (!employeeService.isUsernameUniqueToCreate(employeeDto.getUsername())) {
+            bindingResult.rejectValue("username", "", "username is not unique");
+        }
         if (employeeDto.getPassword() == null || employeeDto.getPassword().length() < 6)
             bindingResult.rejectValue("password", "", "password must be between 6 and 50 characters");
         if (bindingResult.hasErrors()) {
@@ -43,8 +46,9 @@ public class EmployeeController {
             model.addAttribute("errors", bindingResult.getAllErrors());
             return "employees/new";
         }
+
         employeeService.create(employeeDto);
-        return "redirect:/employees";
+        return "redirect:/employee";
     }
 
     // Update an existing employee
@@ -59,6 +63,9 @@ public class EmployeeController {
     @PostMapping("/edit/{id}")
     public String updateEmployee(@PathVariable String id, @ModelAttribute @Valid EmployeeDto employeeDto,
                                  BindingResult bindingResult, Model model) {
+        if (!employeeService.isUsernameUniqueToUpdate(employeeDto.getId(), employeeDto.getUsername())) {
+            bindingResult.rejectValue("username", "", "username is not unique");
+        }
         if (!isPasswordValid(employeeDto.getPassword()))
             bindingResult.rejectValue("password", "", "password must be between 6 and 50 characters");
         if (bindingResult.hasErrors()) {
