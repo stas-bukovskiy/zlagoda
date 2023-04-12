@@ -17,11 +17,11 @@ CREATE TABLE Employee
     PRIMARY KEY (id_employee)
 );
 
+CREATE SEQUENCE category_id_seq START 1;
 CREATE TABLE Category
 (
-    category_number INT         NOT NULL,
-    category_name   VARCHAR(50) NOT NULL,
-    PRIMARY KEY (category_number)
+    category_number INT PRIMARY KEY DEFAULT nextval('category_id_seq'),
+    category_name   VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE Customer_Card
