@@ -8,11 +8,11 @@
     <div th:replace="~{fragments/show-password::show-password-css}"></div>
 
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
 <div th:replace="~{fragments/header::header}"></div>
 
-<div class="container-sm">
+<div class="container-sm flex-grow-1">
     <h1>Create Employee</h1>
     <form method="post" th:action="@{/employee/new}" th:object="${employee}">
         <div th:if="${errors != null}">

@@ -7,11 +7,11 @@
     <div th:replace="~{fragments/header::header-css}"></div>
 
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
 <div th:replace="~{fragments/header::header}"></div>
 
-<div class="container-fluid">
+<div class="flex-grow-1 container-fluid">
     <div class="d-flex justify-content-between mx-5">
         <h1>Employees</h1>
         <a class="btn btn-primary mb-3" th:href="@{/employee/new}">Add New Employee</a>
@@ -59,6 +59,7 @@
         </tbody>
     </table>
 </div>
+
 
 <div th:replace="~{fragments/footer::footer}"></div>
 
