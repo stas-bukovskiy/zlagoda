@@ -21,7 +21,7 @@ public class EmployeeController {
     @GetMapping
     public String listEmployees(Model model) {
         model.addAttribute("employees", employeeService.getAll(DEFAULT_SORT));
-        return "employees/list";
+        return "employee/list";
     }
 
     // Create a new employee
@@ -29,7 +29,7 @@ public class EmployeeController {
     public String createEmployeeForm(Model model) {
         model.addAttribute("employee", new EmployeeDto());
         addDefaultAttributes(model);
-        return "employees/new";
+        return "employee/new";
     }
 
     @PostMapping("/new")
@@ -44,7 +44,7 @@ public class EmployeeController {
             model.addAttribute("employee", employeeDto);
             addDefaultAttributes(model);
             model.addAttribute("errors", bindingResult.getAllErrors());
-            return "employees/new";
+            return "employee/new";
         }
 
         employeeService.create(employeeDto);
@@ -57,7 +57,7 @@ public class EmployeeController {
         EmployeeDto employeeDto = employeeService.getById(id);
         model.addAttribute("employee", employeeDto);
         addDefaultAttributes(model);
-        return "employees/edit";
+        return "employee/edit";
     }
 
     @PostMapping("/edit/{id}")
@@ -72,7 +72,7 @@ public class EmployeeController {
             model.addAttribute("employee", employeeDto);
             addDefaultAttributes(model);
             model.addAttribute("errors", bindingResult.getAllErrors());
-            return "employees/edit";
+            return "employee/edit";
         }
         employeeService.update(id, employeeDto);
         return "redirect:/employee";

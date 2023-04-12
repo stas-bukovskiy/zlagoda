@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Employee</title>
+
+    <div th:replace="~{fragments/header::header-css}"></div>
+    <div th:replace="~{fragments/show-password::show-password-css}"></div>
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header::header}"></div>
+
+<div class="container-sm flex-grow-1">
+    <h1>Create Employee</h1>
+    <form method="post" th:action="@{/employee/new}" th:object="${employee}">
+        <div th:if="${errors != null}">
+            <div class="alert alert-danger">
+                <ul>
+                    <li th:each="error : ${errors}" th:text="${error.getDefaultMessage()}"></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="username">Username:</label>
+            <input autocomplete="off" class="form-control" id="username" required th:field="*{username}" type="text">
+        </div>
+        <div class="form-group mb-3">
+            <label for="password">Password:</label>
+            <div class="input-group">
+                <input autocomplete="off" class="form-control" id="password" th:field="*{password}"
+                       type="password">
+                <button id="toggle-password" onclick="toggleShowPassword()" type="button">
+                    <i class="fa fa-regular fa-eye" id="eye-icon" style="font-size:16px"></i>
+                </button>
+            </div>
+
+        </div>
+        <div class="form-group mb-3">
+            <label for="surname">Surname:</label>
+            <input autocomplete="off" class="form-control" id="surname" required th:field="*{surname}" type="text">
+        </div>
+        <div class="form-group mb-3">
+            <label for="name">Name:</label>
+            <input autocomplete="off" class="form-control" id="name" required th:field="*{name}" type="text">
+        </div>
+        <div class="form-group mb-3">
+            <label for="patronymic">Patronymic:</label>
+            <input autocomplete="off" class="form-control" id="patronymic" th:field="*{patronymic}"
+                   type="text">
+        </div>
+        <div class="form-group mb-3">
+            <label for="role">Role:</label>
+            <select class="form-select" id="role" th:field="*{role}">
+                <option th:each="role: ${roles}" th:text="${role.name()}" th:value="${role.name()}"></option>
+            </select>
+        </div>
+        <div class="form-group mb-3">
+            <label for="salary">Salary:</label>
+            <input class="form-control" id="salary" required th:field="*{salary}" type="number">
+        </div>
+        <div class="form-group mb-3">
+            <label for="dateOfBirth">Date of birth:</label>
+            <input class="form-control" id="dateOfBirth" required th:field="*{dateOfBirth}" type="date">
+        </div>
+        <div class="form-group mb-3">
+            <label for="dateOfStart">Date of start:</label>
+            <input class="form-control" id="dateOfStart" required th:field="*{dateOfStart}" type="date">
+        </div>
+        <div class="form-group mb-3">
+            <label for="phoneNumber">Phone number:</label>
+            <input class="form-control" id="phoneNumber" required th:field="*{phoneNumber}" type="tel">
+        </div>
+        <div class="form-group mb-3">
+            <label for="city">City:</label>
+            <input class="form-control" id="city" list="cities-list" required th:field="*{city}" type="text">
+            <datalist id="cities-list">
+                <option th:each="city: ${cities}" th:text="city"></option>
+            </datalist>
+        </div>
+        <div class="form-group mb-3">
+            <label for="street">Street:</label>
+            <input class="form-control" id="street" list="streets-list" required th:field="*{street}" type="text">
+            <datalist id="streets-list">
+                <option th:each="street: ${streets}" th:text="street"></option>
+            </datalist>
+        </div>
+        <div class="form-group mb-3">
+            <label for="zipCode">Zip code:</label>
+            <input class="form-control" id="zipCode" list="zipCodes-list" required th:field="*{zipCode}" type="text">
+            <datalist id="zipCodes-list">
+                <option th:each="zipCode: ${zipCodes}" th:text="zipCode"></option>
+            </datalist>
+        </div>
+
+        <div class="d-flex justify-content-center">
+            <button class="btn btn-success btn-lg me-5" type="submit">Create</button>
+            <a class="btn btn-secondary btn-lg" th:href="@{/employee}">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<div th:replace="~{fragments/footer::footer}"></div>
+<div th:replace="~{fragments/show-password::show-password-function}"></div>
+
+</body>
+</html>
