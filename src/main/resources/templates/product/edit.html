@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Product</title>
+
+    <div th:replace="~{fragments/header::header-css}"></div>
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header::header}"></div>
+
+<div class="container-sm flex-grow-1">
+    <h1>Edit Product</h1>
+    <form method="post" th:action="@{/product/edit/{id}(id=${product.id})}" th:object="${product}">
+        <div th:if="${errors != null}">
+            <div class="alert alert-danger">
+                <ul>
+                    <li th:each="error : ${errors}" th:text="${error.getDefaultMessage()}"></li>
+                </ul>
+            </div>
+        </div>
+
+
+        <div class="form-group mb-3">
+            <label for="name">Name:</label>
+            <input autocomplete="off" class="form-control" id="name" required th:field="*{name}" type="text">
+        </div>
+        <div class="form-group mb-3">
+            <label for="characteristics">Characteristics:</label>
+            <input autocomplete="off" class="form-control" id="characteristics" required th:field="*{characteristics}"
+                   type="text">
+        </div>
+        <div class="form-group mb-3">
+            <label for="category">Characteristics:</label>
+            <select class="form-select" id="category" th:field="*{categoryId}">
+                <option th:each="category : ${categories.values()}" th:selected="${product.categoryId == category.id}"
+                        th:text="${category.name}"
+                        th:value="${category.id}"></option>
+            </select>
+        </div>
+
+        <div class="d-flex justify-content-center">
+            <button class="btn btn-success btn-lg me-5" type="submit">Update</button>
+            <a class="btn btn-secondary btn-lg" th:href="@{/product}">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<div th:replace="~{fragments/footer::footer}"></div>
+
+</body>
+</html>

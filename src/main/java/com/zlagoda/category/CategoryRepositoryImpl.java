@@ -3,9 +3,13 @@ package com.zlagoda.category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.zlagoda.utils.SortUtils.sortToString;
@@ -38,7 +42,16 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     public Category save(Category category) {
         String sql = "INSERT INTO category (category_name) " +
                 "VALUES (?)";
-        jdbcTemplate.update(sql, category.getName());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(
+                connection -> {
+                    PreparedStatement ps = connection.prepareStatement(sql, new String[]{"category_number"});
+                    ps.setString(1, category.getName());
+                    return ps;
+                },
+                keyHolder);
+        Long generatedId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        category.setId(generatedId);
         return category;
     }
 

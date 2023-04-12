@@ -51,13 +51,13 @@ CREATE TABLE "check"
     FOREIGN KEY (card_number) REFERENCES Customer_Card (card_number) ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
+CREATE SEQUENCE product_id_seq START 1;
 CREATE TABLE Product
 (
-    id_product      INT          NOT NULL,
+    id_product      INT PRIMARY KEY DEFAULT nextval('product_id_seq'),
     category_number INT          NOT NULL,
-    product_name    VARCHAR(50)  NOT NULL,
+    product_name    VARCHAR(50)  NOT NULL UNIQUE,
     characteristics VARCHAR(100) NOT NULL,
-    PRIMARY KEY (id_product),
     FOREIGN KEY (category_number)
         REFERENCES Category (category_number)
         ON UPDATE CASCADE

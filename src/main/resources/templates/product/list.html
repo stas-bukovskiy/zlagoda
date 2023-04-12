@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Categories</title>
+    <title>Products</title>
 
     <div th:replace="~{fragments/header::header-css}"></div>
 
@@ -13,8 +13,8 @@
 
 <div class="flex-grow-1 container-fluid">
     <div class="d-flex justify-content-between align-items-center mx-5 my-2">
-        <h1>Product categories</h1>
-        <a class="btn btn-primary mb-3" th:href="@{/category/new}">Add new</a>
+        <h1>Customer products</h1>
+        <a class="btn btn-primary mb-3" th:href="@{/product/new}">Add new</a>
     </div>
     <div class="container mx-auto">
         <table class="table table-striped">
@@ -22,19 +22,23 @@
             <tr>
                 <th class="col-1">#</th>
                 <th>Name</th>
+                <th>Characteristics</th>
+                <th>Category</th>
                 <th class="col-1"></th>
                 <th class="col-1"></th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="category : ${categories}">
-                <td th:text="${category.id}"></td>
-                <td th:text="${category.name}"></td>
+            <tr th:each="product : ${products}">
+                <td th:text="${product.id}"></td>
+                <td th:text="${product.name}"></td>
+                <td th:text="${product.characteristics}"></td>
+                <th th:text="${categories.get(product.categoryId).name}"></th>
                 <td>
-                    <a class="btn btn-warning" th:href="@{/category/edit/{id}(id=${category.id})}">Edit</a>
+                    <a class="btn btn-warning" th:href="@{/product/edit/{id}(id=${product.id})}">Edit</a>
                 </td>
                 <td>
-                    <a class="btn btn-danger" th:href="@{/category/delete/{id}(id=${category.id})}">Delete</a>
+                    <a class="btn btn-danger" th:href="@{/product/delete/{id}(id=${product.id})}">Delete</a>
                 </td>
             </tr>
             </tbody>

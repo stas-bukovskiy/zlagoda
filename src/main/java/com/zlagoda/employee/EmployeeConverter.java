@@ -1,5 +1,6 @@
 package com.zlagoda.employee;
 
+import com.zlagoda.helpers.Converter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +10,7 @@ import static com.zlagoda.utils.DateConverter.convertToDate;
 import static com.zlagoda.utils.DateConverter.convertToDateString;
 
 @Component
-public class EmployeeConverter extends com.zlagoda.helpers.Converter<Employee, EmployeeDto> {
+public class EmployeeConverter extends Converter<Employee, EmployeeDto> {
 
     public EmployeeConverter() {
         super(new ModelMapper(), Employee.class, EmployeeDto.class);
