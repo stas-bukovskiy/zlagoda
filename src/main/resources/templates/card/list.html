@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Cards</title>
+
+    <div th:replace="~{fragments/header::header-css}"></div>
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header::header}"></div>
+
+<div class="flex-grow-1 container-fluid">
+    <div class="d-flex justify-content-between align-items-center mx-5 my-2">
+        <h1>Customer cards</h1>
+        <a class="btn btn-primary mb-3" th:href="@{/customer/card/new}">Add new</a>
+    </div>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Card number</th>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Patronymic</th>
+            <th>Phone number</th>
+            <th>City</th>
+            <th>Street</th>
+            <th>Zip code</th>
+            <th>Percent</th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="card : ${cards}">
+            <td th:text="${card.cardNumber}"></td>
+            <td th:text="${card.name}"></td>
+            <td th:text="${card.surname}"></td>
+            <td th:text="${card.patronymic}"></td>
+            <td th:text="${card.phoneNumber}"></td>
+            <td th:text="${card.city}"></td>
+            <td th:text="${card.street}"></td>
+            <td th:text="${card.zipCode}"></td>
+            <td th:text="${card.percent}"></td>
+            <td>
+                <a class="btn btn-warning" th:href="@{/customer/card/edit/{id}(id=${card.cardNumber})}">Edit</a>
+            </td>
+            <td>
+                <a class="btn btn-danger" th:href="@{/customer/card/{id}(id=${card.cardNumber})}">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<div th:replace="~{fragments/footer::footer}"></div>
+
+</body>
+</html>

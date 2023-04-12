@@ -1,6 +1,6 @@
 package com.zlagoda.check;
 
-import com.zlagoda.card.Card;
+import com.zlagoda.card.CustomerCard;
 import com.zlagoda.employee.Employee;
 import com.zlagoda.sale.Sale;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ public class Check {
 
     private String checkNumber;
     private Employee employee;
-    private Card customerCard;
+    private CustomerCard customerCard;
     private Set<Sale> sales;
     private Date printDate;
     private BigDecimal totalSum;

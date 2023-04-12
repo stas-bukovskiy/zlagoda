@@ -2,10 +2,9 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Edit Employee</title>
+    <title>Create Customer Card</title>
 
     <div th:replace="~{fragments/header::header-css}"></div>
-    <div th:replace="~{fragments/show-password::show-password-css}"></div>
 
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -13,8 +12,8 @@
 <div th:replace="~{fragments/header::header}"></div>
 
 <div class="container-sm flex-grow-1">
-    <h1>Edit Employee</h1>
-    <form method="post" th:action="@{/employee/edit/{id}(id=${employee.id})}" th:object="${employee}">
+    <h1>Create Customer Card</h1>
+    <form method="post" th:action="@{/customer/card/new}" th:object="${card}">
         <div th:if="${errors != null}">
             <div class="alert alert-danger">
                 <ul>
@@ -23,21 +22,6 @@
             </div>
         </div>
 
-        <div class="form-group mb-3">
-            <label for="username">Username:</label>
-            <input autocomplete="off" class="form-control" id="username" required th:field="*{username}" type="text">
-        </div>
-        <div class="form-group mb-3">
-            <label for="password">Password:</label>
-            <div class="input-group">
-                <input autocomplete="off" class="form-control" id="password" th:field="*{password}"
-                       type="password">
-                <button id="toggle-password" onclick="toggleShowPassword()" type="button">
-                    <i class="fa fa-regular fa-eye" id="eye-icon" style="font-size:16px"></i>
-                </button>
-            </div>
-
-        </div>
         <div class="form-group mb-3">
             <label for="surname">Surname:</label>
             <input autocomplete="off" class="form-control" id="surname" required th:field="*{surname}" type="text">
@@ -48,26 +32,8 @@
         </div>
         <div class="form-group mb-3">
             <label for="patronymic">Patronymic:</label>
-            <input autocomplete="off" class="form-control" id="patronymic" required th:field="*{patronymic}"
+            <input autocomplete="off" class="form-control" id="patronymic" th:field="*{patronymic}"
                    type="text">
-        </div>
-        <div class="form-group mb-3">
-            <label for="role">Role:</label>
-            <select class="form-select" id="role" th:field="*{role}">
-                <option th:each="role: ${roles}" th:text="${role.name()}" th:value="${role.name()}"></option>
-            </select>
-        </div>
-        <div class="form-group mb-3">
-            <label for="salary">Salary:</label>
-            <input class="form-control" id="salary" required th:field="*{salary}" type="number">
-        </div>
-        <div class="form-group mb-3">
-            <label for="dateOfBirth">Date of birth:</label>
-            <input class="form-control" id="dateOfBirth" required th:field="*{dateOfBirth}" type="date">
-        </div>
-        <div class="form-group mb-3">
-            <label for="dateOfStart">Date of start:</label>
-            <input class="form-control" id="dateOfStart" required th:field="*{dateOfStart}" type="date">
         </div>
         <div class="form-group mb-3">
             <label for="phoneNumber">Phone number:</label>
@@ -94,16 +60,19 @@
                 <option th:each="zipCode: ${zipCodes}" th:text="zipCode"></option>
             </datalist>
         </div>
+        <div class="form-group mb-3">
+            <label for="percent">Percent of discount:</label>
+            <input class="form-control" id="percent" required th:field="*{percent}" type="number">
+        </div>
 
         <div class="d-flex justify-content-center">
-            <button class="btn btn-primary me-5" type="submit">Update</button>
-            <a class="btn btn-secondary" th:href="@{/employee}">Cancel</a>
+            <button class="btn btn-success btn-lg me-5" type="submit">Create</button>
+            <a class="btn btn-secondary btn-lg" th:href="@{/customer/card}">Cancel</a>
         </div>
     </form>
 </div>
 
 <div th:replace="~{fragments/footer::footer}"></div>
-<div th:replace="~{fragments/show-password::show-password-function}"></div>
 
 </body>
 </html>
