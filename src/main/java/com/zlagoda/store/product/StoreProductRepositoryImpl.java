@@ -39,7 +39,7 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
                 "FROM store_product " +
                 "WHERE upc = ?";
         List<StoreProduct> store_products = jdbcTemplate.query(sql, rowMapper, upc);
-        return store_products.isEmpty() ? Optional.empty() : Optional.of(store_products.get(0));
+        return store_products.isEmpty() ? Optional.empty() : Optional.of(linkNestedEntities(store_products.get(0)));
     }
 
     @Override
@@ -85,6 +85,17 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
     public void deleteAll() {
         String sql = "DELETE FROM store_product";
         jdbcTemplate.update(sql);
+    }
+
+    @Override
+    public boolean existsById(String upc) {
+        String sql = "SELECT COUNT(*) FROM store_product WHERE upc = ?";
+        try {
+            int count = jdbcTemplate.queryForObject(sql, Integer.class, upc);
+            return count > 0;
+        } catch (NullPointerException e) {
+            return false;
+        }
     }
 
     private StoreProduct linkNestedEntities(StoreProduct storeProduct) {
