@@ -1,5 +1,6 @@
 package com.zlagoda.sale;
 
+import com.zlagoda.check.Check;
 import com.zlagoda.store.product.StoreProduct;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,8 +13,10 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class Sale {
 
+
     private StoreProduct shopProduct;
-    private String productNumber;
+    private Check check;
+    private String productNumber; //?? why String
     private BigDecimal sellingPrice;
 
 }
