@@ -22,6 +22,7 @@
             <tr>
                 <th class="col-1">#</th>
                 <th>Name</th>
+                <th>Expiration date</th>
                 <th>Characteristics</th>
                 <th>Category</th>
                 <th class="col-1"></th>
@@ -32,6 +33,7 @@
             <tr th:each="product : ${products}">
                 <td th:text="${product.id}"></td>
                 <td th:text="${product.name}"></td>
+                <td th:text="${product.expirationDate}"></td>
                 <td th:text="${product.characteristics}"></td>
                 <th th:text="${categories.get(product.categoryId).name}"></th>
                 <td>
