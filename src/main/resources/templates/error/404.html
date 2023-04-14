@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments/header::header-css}"></div>
+    <title>404 Not Found</title>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header::header}"></div>
+
+<div class="container mt-5 flex-grow-1">
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">404 Error</h4>
+        <p th:text="${exception == null ? 'The page you requested could not be found.' : exception.getMessage()}"></p>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer::footer}"></div>
+
+</body>
+</html>
