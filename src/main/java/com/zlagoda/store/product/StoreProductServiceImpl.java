@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 import static com.zlagoda.utils.RandomUtils.randomUPC;
@@ -61,8 +59,13 @@ public class StoreProductServiceImpl implements StoreProductService {
     }
 
     @Override
-    public boolean isUpcUnique(String upc) {
+    public boolean isUniqueToCreate(String upc) {
         return !repository.existsById(upc);
+    }
+
+    @Override
+    public boolean isUniqueToUpdate(String oldUpc, String newUpc) {
+        return oldUpc.equals(newUpc) || isUniqueToCreate(newUpc);
     }
 
     private StoreProduct makePromIfNeeds(StoreProduct storeProduct) {
@@ -84,10 +87,14 @@ public class StoreProductServiceImpl implements StoreProductService {
     }
 
     private boolean isProductNeedDiscount(StoreProduct storeProduct) {
-        Instant nowDateInstant = new Date().toInstant();
-        Instant expirationDateInstant = storeProduct.getProduct().getExpirationDate().toInstant();
-        return storeProduct.getProductsNumber() >= properties.getNumberOfProductsToBePromotional()
-                && nowDateInstant.plus(properties.getNumberOfDaysToBePromotional()).isAfter(expirationDateInstant);
-    }
+//        if (storeProduct.getProduct().getExpirationDate() == null) return false;
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.add(Calendar.DAY_OF_YEAR, (int) properties.getNumberOfDaysToBePromotional().get(ChronoUnit.DAYS));
+//        Date date = calendar.getTime();
+//        Date expirationDate = storeProduct.getProduct().getExpirationDate();
+//        return storeProduct.getProductsNumber() >= properties.getNumberOfProductsToBePromotional()
+//                && date.after(expirationDate);
 
+        return storeProduct.getProductsNumber() >= properties.getNumberOfProductsToBePromotional();
+    }
 }

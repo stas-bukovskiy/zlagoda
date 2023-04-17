@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 @Data
 @Builder
 @AllArgsConstructor
@@ -17,7 +15,6 @@ public class Product implements Entity {
     private Long id;
     private String name;
     private String characteristics;
-    private Date expirationDate;
     private Long categoryId;
 
 }
