@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Store Product s</title>
+
+    <div th:replace="~{fragments/header::header-css}"></div>
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header::header}"></div>
+
+<div class="flex-grow-1 container-fluid">
+    <div class="d-flex justify-content-between align-items-center mx-5 my-2">
+        <h1>Store products</h1>
+        <a class="btn btn-primary mb-3" th:href="@{/store/product/new}">Add new</a>
+    </div>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>UPC</th>
+            <th>Selling Price</th>
+            <th>Product Number</th>
+            <th class="col-1">Is Promotional</th>
+            <th>Product</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="storeProduct : ${storeProducts}">
+            <td th:text="${storeProduct.upc}"></td>
+            <td th:text="${storeProduct.sellingPrice}"></td>
+            <td th:text="${storeProduct.productsNumber}"></td>
+            <td th:text="${storeProduct.promotional}"></td>
+            <th><a th:href="@{/product/edit/{id}(id=${storeProduct.productId})}"
+                   th:text="${products.get(storeProduct.productId).name}"></a></th>
+            <td>
+                <a class="btn btn-warning" th:href="@{/store/product/edit/{upc}(upc=${storeProduct.upc})}">Edit</a>
+            </td>
+            <td>
+                <a class="btn btn-danger" th:href="@{/store/product/delete/{upc}(upc=${storeProduct.upc})}">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<div th:replace="~{fragments/footer::footer}"></div>
+
+</body>
+</html>

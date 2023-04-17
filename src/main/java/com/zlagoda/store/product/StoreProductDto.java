@@ -1,7 +1,6 @@
 package com.zlagoda.store.product;
 
 import com.zlagoda.helpers.DTO;
-import com.zlagoda.product.ProductDto;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -34,7 +33,7 @@ public class StoreProductDto implements DTO {
     private boolean isPromotional;
 
     @NotNull(message = "product can not be null")
-    private ProductDto product;
+    private Long productId;
 
     @Nullable
     private StoreProductDto promStoreProduct;

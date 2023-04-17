@@ -15,7 +15,7 @@ public final class RandomUtils {
         StringBuilder sb = new StringBuilder();
 
         sb.append("0");
-        for (int i = 1; i <= 11; i++) {
+        for (int i = 1; i <= 10; i++) {
             sb.append(RANDOM.nextInt(10));
         }
 

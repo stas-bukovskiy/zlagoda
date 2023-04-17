@@ -6,11 +6,11 @@ import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.convert.DurationUnit;
+import org.springframework.boot.convert.PeriodUnit;
 import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
-import java.time.Duration;
+import java.time.Period;
 import java.time.temporal.ChronoUnit;
 
 @Getter
@@ -22,8 +22,8 @@ public class StoreProductProperties {
     @Min(1)
     private int numberOfProductsToBePromotional = 1;
 
-    @DurationUnit(ChronoUnit.DAYS)
-    private Duration numberOfDaysToBePromotional = Duration.ofDays(7);
+    @PeriodUnit(ChronoUnit.DAYS)
+    private Period numberOfDaysToBePromotional = Period.ofDays(7);
 
     @DecimalMin("0.0")
     @DecimalMax("1.0")
