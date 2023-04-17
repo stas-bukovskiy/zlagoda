@@ -26,7 +26,7 @@ public class ProductDto implements DTO {
     @Size(min = 1, max = 50, message = "product name length must be between 1 and 50 characters")
     private String characteristics;
 
-    @NotNull(message = "expiration date can not be null")
+    @Nullable
     private String expirationDate;
 
     @NotNull(message = "product category can not be null")
