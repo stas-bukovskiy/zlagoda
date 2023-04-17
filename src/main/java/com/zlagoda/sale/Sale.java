@@ -16,7 +16,7 @@ public class Sale {
 
     private StoreProduct shopProduct;
     private Check check;
-    private String productNumber; //?? why String
+    private int productNumber;
     private BigDecimal sellingPrice;
 
 }

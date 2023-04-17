@@ -57,7 +57,6 @@ CREATE TABLE Product
     id_product      INT PRIMARY KEY DEFAULT nextval('product_id_seq'),
     category_number INT          NOT NULL,
     product_name    VARCHAR(50)  NOT NULL UNIQUE,
-    expiration_date DATE,
     characteristics VARCHAR(100) NOT NULL,
     FOREIGN KEY (category_number)
         REFERENCES Category (category_number)

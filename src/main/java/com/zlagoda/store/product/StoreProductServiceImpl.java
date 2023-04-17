@@ -4,9 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import static com.zlagoda.utils.RandomUtils.randomUPC;
@@ -90,12 +87,14 @@ public class StoreProductServiceImpl implements StoreProductService {
     }
 
     private boolean isProductNeedDiscount(StoreProduct storeProduct) {
-        if (storeProduct.getProduct().getExpirationDate() == null) return false;
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, (int) properties.getNumberOfDaysToBePromotional().get(ChronoUnit.DAYS));
-        Date date = calendar.getTime();
-        Date expirationDate = storeProduct.getProduct().getExpirationDate();
-        return storeProduct.getProductsNumber() >= properties.getNumberOfProductsToBePromotional()
-                && date.after(expirationDate);
+//        if (storeProduct.getProduct().getExpirationDate() == null) return false;
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.add(Calendar.DAY_OF_YEAR, (int) properties.getNumberOfDaysToBePromotional().get(ChronoUnit.DAYS));
+//        Date date = calendar.getTime();
+//        Date expirationDate = storeProduct.getProduct().getExpirationDate();
+//        return storeProduct.getProductsNumber() >= properties.getNumberOfProductsToBePromotional()
+//                && date.after(expirationDate);
+
+        return storeProduct.getProductsNumber() >= properties.getNumberOfProductsToBePromotional();
     }
 }

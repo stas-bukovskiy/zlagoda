@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Objects;
@@ -41,7 +40,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public Product save(Product product) {
-        String sql = "INSERT INTO product (category_number, product_name, characteristics, expiration_date) " +
+        String sql = "INSERT INTO product (category_number, product_name, characteristics) " +
                 "VALUES (?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
@@ -50,7 +49,6 @@ public class ProductRepositoryImpl implements ProductRepository {
                     ps.setLong(1, product.getCategoryId());
                     ps.setString(2, product.getName());
                     ps.setString(3, product.getCharacteristics());
-                    ps.setDate(4, new Date(product.getExpirationDate().getTime()));
                     return ps;
                 },
                 keyHolder);
@@ -62,13 +60,12 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Product update(Long id, Product product) {
         String sql = "UPDATE product " +
-                "SET category_number=?, product_name=?, characteristics=?, expiration_date=? " +
+                "SET category_number=?, product_name=?, characteristics=? " +
                 "WHERE id_product=?";
         jdbcTemplate.update(sql,
                 product.getCategoryId(),
                 product.getName(),
                 product.getCharacteristics(),
-                product.getExpirationDate(),
                 product.getId());
         return product;
     }

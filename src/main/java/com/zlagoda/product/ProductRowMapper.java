@@ -15,7 +15,6 @@ public class ProductRowMapper implements RowMapper<Product> {
                 rs.getLong("id_product"),
                 rs.getString("product_name"),
                 rs.getString("characteristics"),
-                rs.getDate("expiration_date"),
                 rs.getLong("category_number")
         );
     }
