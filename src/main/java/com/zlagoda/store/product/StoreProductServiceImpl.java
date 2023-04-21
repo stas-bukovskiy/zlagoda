@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static com.zlagoda.utils.RandomUtils.randomUPC;
@@ -66,6 +67,12 @@ public class StoreProductServiceImpl implements StoreProductService {
     @Override
     public boolean isUniqueToUpdate(String oldUpc, String newUpc) {
         return oldUpc.equals(newUpc) || isUniqueToCreate(newUpc);
+    }
+
+    @Override
+    public BigDecimal getPriceByUpc(String upc) {
+        return repository.findPriceById(upc)
+                .orElseThrow(StoreProductNotFoundException::new);
     }
 
     private StoreProduct makePromIfNeeds(StoreProduct storeProduct) {

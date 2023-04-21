@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,6 +97,16 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
         } catch (NullPointerException e) {
             return false;
         }
+    }
+
+    @Override
+    public Optional<BigDecimal> findPriceById(String upc) {
+        String sql = "SELECT selling_price " +
+                "FROM store_product " +
+                "WHERE upc = ?";
+        BigDecimal price = jdbcTemplate.queryForObject(sql, BigDecimal.class, upc);
+        return price == null ? Optional.empty() : Optional.of(price);
+
     }
 
     private StoreProduct linkNestedEntities(StoreProduct storeProduct) {

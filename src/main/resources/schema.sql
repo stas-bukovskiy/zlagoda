@@ -97,3 +97,19 @@ CREATE TABLE Sale
 );
 
 
+CREATE OR REPLACE FUNCTION delete_old_checks()
+    RETURNS TRIGGER AS
+$$
+BEGIN
+    DELETE
+    FROM "check"
+    WHERE "check".print_date < DATE_TRUNC('year', NOW() - INTERVAL '3 years');
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER delete_old_checks
+    AFTER INSERT OR UPDATE
+    ON "check"
+    FOR EACH ROW
+EXECUTE FUNCTION delete_old_checks();

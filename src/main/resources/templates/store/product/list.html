@@ -32,8 +32,8 @@
             <td th:text="${storeProduct.sellingPrice}"></td>
             <td th:text="${storeProduct.productsNumber}"></td>
             <td th:text="${storeProduct.promotional}"></td>
-            <th><a th:href="@{/product/edit/{id}(id=${storeProduct.productId})}"
-                   th:text="${products.get(storeProduct.productId).name}"></a></th>
+            <th><a th:href="@{/product/edit/{id}(id=${storeProduct.product.id})}"
+                   th:text="${products.get(storeProduct.product.id).name}"></a></th>
             <td>
                 <a class="btn btn-warning" th:href="@{/store/product/edit/{upc}(upc=${storeProduct.upc})}">Edit</a>
             </td>

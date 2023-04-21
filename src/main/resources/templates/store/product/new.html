@@ -37,7 +37,7 @@
         </div>
         <div class="form-group mb-3">
             <label for="product">Product:</label>
-            <select class="form-select" id="product" th:field="*{productId}">
+            <select class="form-select" id="product" th:field="*{product}">
                 <option selected th:each="product : ${products.values()}"
                         th:text="${product.name}"
                         th:value="${product.id}"></option>
