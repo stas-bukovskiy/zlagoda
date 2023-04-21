@@ -1,0 +1,210 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title></title>
+</head>
+<body>
+
+<div th:fragment="add-sale-modal">
+
+    <!-- Modal -->
+    <div aria-hidden="true" aria-labelledby="searchModalLabel" class="modal fade" id="searchModal" role="dialog"
+         tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="searchModalLabel">Search Products</h5>
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="searchForm">
+                        <div class="form-group">
+                            <label for="searchInput"></label><input class="form-control" id="searchInput"
+                                                                    placeholder="Search by ID, Name, or Description"
+                                                                    type="text"/>
+                        </div>
+                    </form>
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>UPC</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                        </tr>
+                        </thead>
+                        <tbody id="productTableBody">
+                        <!-- Products will be added here dynamically -->
+                        <!-- Example of how to populate table rows from model attribute -->
+                        <tr onclick="selectProduct(this)" th:each="storeProduct : ${storeProducts}">
+                            <td th:text="${storeProduct.value.upc}"></td>
+                            <td th:text="${storeProduct.value.product.name}"></td>
+                            <td th:text="${storeProduct.value.product.characteristics}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <script th:inline="javascript" type="text/javascript">
+
+            const UPC_COLUMN_INDEX = 0;
+            const PRICE_FOR_ONE_COLUMN_INDEX = 2;
+            const AMOUNT_COLUMN_INDEX = 3;
+            const SUM_COLUMN_INDEX = 4;
+            const VAT_COLUMN_INDEX = 5;
+
+            // on start up
+            countSalesResults();
+
+            function countSalesResults() {
+                const table = document.getElementById("salesTable");
+                const rows = table.rows;
+                let sum = 0;
+
+                for (let i = 0; i < rows.length - 2; i++) {
+                    const amountCell = rows[i].cells[AMOUNT_COLUMN_INDEX].children[0].children[0];
+                    const amount = parseInt(amountCell.value);
+                    const priceForOneCell = rows[i].cells[PRICE_FOR_ONE_COLUMN_INDEX];
+                    const priceForOne = parseFloat(priceForOneCell.innerText);
+
+                    if (!isNaN(amount) && !isNaN(priceForOne)) {
+                        const subSum = amount * priceForOne;
+                        sum += subSum;
+
+                        const sumCell = rows[i].cells[SUM_COLUMN_INDEX];
+                        sumCell.innerText = subSum.toFixed(4);
+                        const vatCell = rows[i].cells[VAT_COLUMN_INDEX];
+                        vatCell.innerText = (subSum * [[${vatCoefficient}]]).toFixed(4);
+                    }
+                }
+
+                const vat = sum * [[${vatCoefficient}]];
+
+                const sumCell = rows[rows.length - 2].cells[SUM_COLUMN_INDEX];
+                sumCell.innerText = sum.toFixed(4);
+                const vatCell = rows[rows.length - 2].cells[VAT_COLUMN_INDEX];
+                vatCell.innerText = vat.toFixed(4);
+                const totalSumCell = rows[rows.length - 1].cells[SUM_COLUMN_INDEX];
+                totalSumCell.innerText = (sum + vat).toFixed(4);
+            }
+
+            function selectProduct(row) {
+                const upc = row.querySelector("td:nth-child(1)").textContent;
+                const salesTable = document.getElementById("salesTable");
+                const rows = salesTable.rows;
+
+                let existInTable = false;
+
+                for (let i = 0; i < rows.length - 2; i++) {
+                    const rowUpc = rows[i].cells[UPC_COLUMN_INDEX].children[0].children[0].value;
+                    if (rowUpc === upc) {
+                        const amountCell = rows[i].cells[AMOUNT_COLUMN_INDEX].children[0].children[0];
+                        amountCell.value++;
+                        existInTable = true;
+                    }
+                }
+
+                if (!existInTable) {
+                    const storeProducts = [[${storeProducts}]];
+                    const vatCoefficient = [[${vatCoefficient}]];
+                    const storeProduct = storeProducts[upc];
+                    const sum = storeProduct.sellingPrice;
+
+                    const index = salesTable.rows.length - 2;
+                    const newRow = salesTable.insertRow(index);
+
+                    const upcCell = newRow.insertCell(0);
+                    const productNameCell = newRow.insertCell(1);
+                    const sellingPriceCell = newRow.insertCell(2);
+                    const productNumberCell = newRow.insertCell(3);
+                    const sumCell = newRow.insertCell(4);
+                    const vatCell = newRow.insertCell(5);
+                    const removeButtonCell = newRow.insertCell(6);
+
+                    upcCell.innerHTML = "<label><input name='sales[" + index + "].storeProductUpc' value='" + upc + "' class=\"form-control-plaintext\" type=\"text\" readonly></label>";
+                    productNameCell.innerHTML = storeProduct.product.name;
+                    sellingPriceCell.innerHTML = storeProduct.sellingPrice;
+                    productNumberCell.innerHTML = "<label><input name='sales[" + index + "].productNumber'  class=\"form-control amount-input\" type=\"number\" min=\"1\" required step=\"1\" value='1'/></label>"
+                    sumCell.innerHTML = sum.toFixed(4);
+                    vatCell.innerHTML = (sum * vatCoefficient).toFixed(4);
+                    removeButtonCell.innerHTML = "<button type='button' class='btn btn-danger' onclick='removeSaleRow(this)'>Delete</button>";
+
+                    addCountResultsEventListener(productNumberCell.children[0].children[0]);
+                }
+                // Close the modal
+                $('#searchModal').modal('hide');
+                countSalesResults();
+            }
+
+
+            function filterProducts() {
+                // Get search input value
+                const searchValue = document.getElementById("searchInput").value.toLowerCase();
+
+                // Get all products in the table
+                const products = document.querySelectorAll("#productTableBody tr");
+
+                // Loop through each product and hide/show based on search input
+                for (let i = 0; i < products.length; i++) {
+                    const id = products[i].querySelector("td:nth-child(1)").textContent.toLowerCase();
+                    const name = products[i].querySelector("td:nth-child(2)").textContent.toLowerCase();
+                    const description = products[i].querySelector("td:nth-child(3)").textContent.toLowerCase();
+
+                    // Remove any previous highlighting
+                    products[i].querySelectorAll(".highlight").forEach(function (span) {
+                        span.outerHTML = span.innerHTML;
+                    });
+
+                    if (id.includes(searchValue) || name.includes(searchValue) || description.includes(searchValue)) {
+                        // Show row and highlight matching text
+                        products[i].style.display = "";
+                        const regex = new RegExp(searchValue, "gi");
+                        products[i].querySelectorAll("td").forEach(function (td) {
+                            td.innerHTML = td.innerHTML.replace(regex, function (match) {
+                                return '<span class="highlight">' + match + '</span>';
+                            });
+                        });
+                    } else {
+                        // Hide row
+                        products[i].style.display = "none";
+                    }
+                }
+            }
+
+            function removeSaleRow(button) {
+                const row = button.parentNode.parentNode;
+                row.parentNode.removeChild(row);
+                countSalesResults();
+            }
+
+            function addCountResultsEventListener(amountInput) {
+                amountInput.addEventListener("input", function (event) {
+                    countSalesResults();
+                });
+            }
+
+            // Attach filterProducts function to search input keyup event
+            document.getElementById("searchInput").addEventListener("keyup", function (event) {
+                filterProducts(); // Call filterProducts function
+            });
+
+            document.getElementById("cardNumber").addEventListener("input", function (event) {
+                console.log("yes")
+                saveCheckToSession([[${check}]]);
+            });
+
+            const amountInputs = document.getElementsByClassName("amount-input");
+
+            // Add an "input" event listener to each input element
+            for (let i = 0; i < amountInputs.length; i++) {
+                addCountResultsEventListener(amountInputs[i]);
+            }
+
+        </script>
+    </div>
+</div>
+</body>
+</html>

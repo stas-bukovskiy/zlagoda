@@ -2,10 +2,12 @@ package com.zlagoda.check;
 
 import com.zlagoda.card.CustomerCard;
 import com.zlagoda.employee.Employee;
+import com.zlagoda.helpers.Entity;
 import com.zlagoda.sale.Sale;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -15,7 +17,8 @@ import java.util.Set;
 @Data
 @Builder
 @AllArgsConstructor
-public class Check {
+@NoArgsConstructor
+public class Check implements Entity {
 
     private String checkNumber;
     private Employee employee;

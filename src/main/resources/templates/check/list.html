@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Checks</title>
+
+    <div th:replace="~{fragments/header::header-css}"></div>
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header::header}"></div>
+
+<div class="flex-grow-1 container-fluid">
+    <div class="d-flex justify-content-between align-items-center mx-5 my-2">
+        <h1>Checks</h1>
+        <a class="btn btn-primary mb-3" th:href="@{/check/new}">Add new</a>
+    </div>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Check number</th>
+            <th>Cashier</th>
+            <th>Customer card</th>
+            <th>Print date</th>
+            <th>Total sum</th>
+            <th>VAT</th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="check : ${checks}">
+            <td th:text="${check.checkNumber}"></td>
+            <td><a th:href="@{/employee/edit/{id}(id=${check.employeeId})}"
+                   th:text="${cashiers.get(check.employeeId).username}"></a></td>
+            <td><a th:href="@{/customer/card/edit/{id}(id=${check.cardNumber})}"
+                   th:text="${check.cardNumber}"></a></td>
+            <td th:text="${check.totalSum}"></td>
+            <td th:text="${check.vat}"></td>
+            <td>
+                <a class="btn btn-success" th:href="@{/check/view/{id}(id=${check.checkNumber})}">View</a>
+            </td>
+            <td>
+                <a class="btn btn-danger" th:href="@{/check/delete/{id}(id=${check.checkNumber})}">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<div th:replace="~{fragments/footer::footer}"></div>
+
+</body>
+</html>

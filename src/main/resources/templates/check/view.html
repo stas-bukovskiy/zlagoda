@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>View Check</title>
+
+    <div th:replace="~{fragments/header::header-css}"></div>
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header::header}"></div>
+
+<div class="container-sm flex-grow-1">
+    <h1>View Check</h1>
+    <p th:text="${'Customer card: ' + check.cardNumber}"></p>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">UPC</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">Price for one</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Sum</th>
+            <th scope="col" th:text="${'VAT(' + (vatCoefficient * 100) + '%)'}"></th>
+        </tr>
+        <thead>
+        <tbody id="salesTable">
+        <tr th:each="sale : ${check.sales}">
+            <td th:value="${sale.storeProductUpc}"></td>
+            <td th:text="${storeProducts.get(sale.storeProductUpc).product.name}"></td>
+            <td th:text="${sale.sellingPrice}"></td>
+            <td th:value="${sale.productNumber}"></td>
+            <td th:text="${sale.sellingPrice * sale.productNumber}"></td>
+            <td th:text="${sale.sellingPrice * sale.productNumber * vatCoefficient}"></td>
+        </tr>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th class="table-active" th:value="${check.totalSum - check.vat}">0.0000</th>
+            <th class="table-active" th:value="${check.vat}">0.0000</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th class="table-dark" colspan="2" th:value="${check.totalSum}">0.0000</th>
+            <th></th>
+        </tr>
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-center">
+        <a class="btn btn-secondary btn-lg" th:href="@{/check}">Back</a>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer::footer}"></div>
+
+</body>
+</html>
