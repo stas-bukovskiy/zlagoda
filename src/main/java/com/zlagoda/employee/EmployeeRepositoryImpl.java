@@ -22,13 +22,17 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 
     @Override
     public List<Employee> findAll(Sort sort) {
-        String sql = "SELECT * FROM employee ORDER BY " + sortToString(sort);
+        String sql = "SELECT * " +
+                "FROM employee " +
+                "ORDER BY " + sortToString(sort);
         return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
     public Optional<Employee> findById(String id) {
-        String sql = "SELECT * FROM employee WHERE id_employee = ?";
+        String sql = "SELECT * " +
+                "FROM employee " +
+                "WHERE id_employee = ?";
         List<Employee> employees = jdbcTemplate.query(sql, rowMapper, id);
         return employees.isEmpty() ? Optional.empty() : Optional.of(employees.get(0));
     }
@@ -36,7 +40,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     @Override
     public Employee save(Employee employee) {
         employee.setId(idGenerator.generate());
-        String sql = "INSERT INTO employee (id_employee, empl_username, empl_password, empl_surname, empl_name, empl_patronymic, empl_role, salary, date_of_birth, date_of_start, phone_number, city, street, zip_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO employee (id_employee, empl_username, empl_password, empl_surname, empl_name, empl_patronymic, empl_role, salary, date_of_birth, date_of_start, phone_number, city, street, zip_code) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql,
                 employee.getId(),
                 employee.getUsername(),
@@ -150,12 +155,22 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 
     @Override
     public boolean existsByUsernameAndIdIsNot(String username, String id) {
-        String sql = "SELECT COUNT(*) FROM employee WHERE empl_username = ? AND id_employee != ?";
+        String sql = "SELECT COUNT(*) " +
+                "FROM employee " +
+                "WHERE empl_username = ? AND id_employee != ?";
         try {
             int count = jdbcTemplate.queryForObject(sql, Integer.class, username, id);
             return count > 0;
         } catch (NullPointerException e) {
             return false;
         }
+    }
+
+    @Override
+    public List<Employee> findAllByRole(EmployeeRole role) {
+        String sql = "SELECT * " +
+                "FROM employee " +
+                "WHERE empl_role=?";
+        return jdbcTemplate.query(sql, rowMapper, role.name());
     }
 }

@@ -21,4 +21,6 @@ public interface EmployeeRepository extends Repository<Employee, String> {
     List<String> findAllDistinctZipCodes();
 
     boolean existsByUsernameAndIdIsNot(String username, String id);
+
+    List<Employee> findAllByRole(EmployeeRole role);
 }

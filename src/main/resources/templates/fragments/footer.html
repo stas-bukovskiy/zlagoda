@@ -12,14 +12,14 @@
                 <span sec:authorize="isAuthenticated()">
                 Logged user: <span sec:authentication="name"></span> |
                 Roles: <span sec:authentication="principal.authorities"></span> |
-                    <form method="post" th:action="@{/logout}">
-                        <button class="btn btn-link" type="submit">Sign Out</button>
+                    <form class="d-inline-block p-0" method="post" th:action="@{/logout}">
+                        <button class="btn btn-link p-0" type="submit">Sign Out</button>
                     </form>
                 </span>
             </div>
             <hr>
             <p class="text-center">
-                Copyright © 2023 <a href="#">Zlagoda</a>.
+                Copyright © 2023 <a th:href="@{/}">Zlagoda</a>.
                 <br/>
                 <small>All rights reserved.</small>
             </p>

@@ -5,6 +5,11 @@ import com.zlagoda.helpers.Service;
 import java.util.List;
 
 public interface EmployeeService extends Service<String, EmployeeDto> {
+
+    Employee getCurrentUser();
+
+    List<Employee> getAllCashiers();
+
     List<EmployeeRole> getRoles();
 
     List<String> getCities();

@@ -1,7 +1,10 @@
 package com.zlagoda.employee;
 
+import com.zlagoda.employee.authentication.EmployeePrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -54,6 +57,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         return repository.deleteById(id)
                 .map(converter::convertToDto)
                 .orElseThrow(EmployeeNotFoundException::new);
+    }
+
+    @Override
+    public Employee getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        EmployeePrincipal employeePrincipal = (EmployeePrincipal) authentication.getPrincipal();
+        return employeePrincipal.getEmployee();
+    }
+
+    @Override
+    public List<Employee> getAllCashiers() {
+        return repository.findAllByRole(EmployeeRole.CASHIER);
     }
 
     @Override
