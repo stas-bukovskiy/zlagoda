@@ -36,6 +36,7 @@
                    th:text="${cashiers.get(check.employeeId).username}"></a></td>
             <td><a th:href="@{/customer/card/edit/{id}(id=${check.cardNumber})}"
                    th:text="${check.cardNumber}"></a></td>
+            <td th:text="${check.printDate.format(formatter)}"></td>
             <td th:text="${check.totalSum}"></td>
             <td th:text="${check.vat}"></td>
             <td>

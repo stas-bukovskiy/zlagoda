@@ -24,20 +24,25 @@
 
         <div class="form-group mb-3">
             <label for="upc">UPC:</label>
-            <input autocomplete="off" class="form-control" id="upc" required th:field="*{upc}" type="text">
+            <input autocomplete="off"
+                   class="form-control" id="upc" required th:field="*{upc}" th:readonly="${storeProduct.promotional}"
+                   type="text">
         </div>
         <div class="form-group mb-3">
             <label for="sellingPrice">Selling price:</label>
-            <input class="form-control" id="sellingPrice" required th:field="*{sellingPrice}" type="number">
+            <input class="form-control"
+                   id="sellingPrice" min="0" required step="0.0001"
+                   th:field="*{sellingPrice}" th:readonly="${storeProduct.promotional}" type="number">
         </div>
         <div class="form-group mb-3">
             <label for="productsNumber">Number of products:</label>
             <input autocomplete="off" class="form-control" id="productsNumber" required th:field="*{productsNumber}"
-                   type="text">
+                   min="0" step="1" type="number">
         </div>
         <div class="form-group mb-3">
             <label for="product">Product:</label>
-            <select class="form-select" id="product" th:field="*{product}">
+            <select class="form-select"
+                    id="product" th:field="*{product}" th:readonly="${storeProduct.promotional}">
                 <option selected th:each="product : ${products.values()}"
                         th:selected="${storeProduct.product.id == product.id}"
                         th:text="${product.name}" th:value="${product.id}"></option>

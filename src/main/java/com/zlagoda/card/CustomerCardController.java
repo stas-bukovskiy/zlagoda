@@ -71,6 +71,13 @@ public class CustomerCardController {
 
     // Delete a customer card
     @GetMapping("/delete/{id}")
+    public String deleteCustomerCardForm(@PathVariable String id, Model model) {
+        model.addAttribute("confirmation", service.createDeleteConfirmation(id));
+        model.addAttribute("uriPrefix", "/customer/card");
+        return "confirmation/delete";
+    }
+
+    @PostMapping("/delete/{id}")
     public String deleteCustomerCard(@PathVariable String id) {
         service.deleteById(id);
         return "redirect:/customer/card";

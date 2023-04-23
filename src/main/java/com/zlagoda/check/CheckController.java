@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -56,6 +57,7 @@ public class CheckController {
     @PostMapping("/new")
     public String createCheck(@ModelAttribute @Valid CheckDto checkDto,
                               BindingResult bindingResult, Model model) {
+        checkService.checkAvailability(checkDto).forEach(bindingResult::addError);
         if (bindingResult.hasErrors()) {
             model.addAttribute("check", checkDto);
             addDefaultAttributes(model);
@@ -93,6 +95,7 @@ public class CheckController {
                 storeProductService.getAll(StoreProductServiceImpl.DEFAULT_SORT).stream()
                         .collect(Collectors.toMap(StoreProductDto::getUpc, Function.identity())));
         model.addAttribute("vatCoefficient", checkProperties.getVat());
+        model.addAttribute("formatter", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
 }
 

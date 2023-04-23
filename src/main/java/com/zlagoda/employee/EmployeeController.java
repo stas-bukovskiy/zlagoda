@@ -84,6 +84,13 @@ public class EmployeeController {
 
     // Delete an employee
     @GetMapping("/delete/{id}")
+    public String deleteEmployeeForm(@PathVariable String id, Model model) {
+        model.addAttribute("confirmation", employeeService.createDeleteConfirmation(id));
+        model.addAttribute("uriPrefix", "/employee");
+        return "confirmation/delete";
+    }
+
+    @PostMapping("/delete/{id}")
     public String deleteEmployee(@PathVariable String id) {
         employeeService.deleteById(id);
         return "redirect:/employee";

@@ -9,4 +9,8 @@ public interface SaleRepository extends Repository<Sale, Pair<String, String>> {
     List<Sale> findAllByCheckNumber(String checkNumber);
 
     boolean existsById(Pair<String, String> upcAndCheckNumber);
+
+    List<Sale> findAllByUpc(String upc);
+
+    void deleteAllByUpc(String upc);
 }

@@ -1,12 +1,11 @@
 package com.zlagoda.employee;
 
+import com.zlagoda.confiramtion.DeleteConfirmation;
 import com.zlagoda.helpers.Service;
 
 import java.util.List;
 
 public interface EmployeeService extends Service<String, EmployeeDto> {
-
-    Employee getCurrentUser();
 
     List<Employee> getAllCashiers();
 
@@ -21,4 +20,6 @@ public interface EmployeeService extends Service<String, EmployeeDto> {
     boolean isUsernameUniqueToCreate(String username);
 
     boolean isUsernameUniqueToUpdate(String id, String username);
+
+    DeleteConfirmation createDeleteConfirmation(String id);
 }

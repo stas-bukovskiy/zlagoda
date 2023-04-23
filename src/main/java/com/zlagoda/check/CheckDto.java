@@ -11,7 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -35,7 +35,7 @@ public class CheckDto implements DTO {
     private List<SaleDto> sales;
 
     @Nullable
-    private Date printDate;
+    private LocalDateTime printDate;
 
     @Nullable
     private BigDecimal totalSum;

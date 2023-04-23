@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Employees</title>
@@ -53,7 +54,11 @@
                 <a class="btn btn-warning" th:href="@{/employee/edit/{id}(id=${employee.id})}">Edit</a>
             </td>
             <td>
-                <a class="btn btn-danger" th:href="@{/employee/delete/{id}(id=${employee.id})}">Delete</a>
+                <a class="btn btn-danger"
+                   th:href="@{/employee/delete/{id}(id=${employee.id})}"
+                   th:if="${#authentication.name!=employee.username}">Delete</a>
+                <a class="btn btn-danger disabled"
+                   disabled href="#" th:if="${#authentication.name==employee.username}">Delete</a>
             </td>
         </tr>
         </tbody>

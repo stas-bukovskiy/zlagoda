@@ -1,5 +1,6 @@
 package com.zlagoda.sale;
 
+import com.zlagoda.check.CheckCreatingException;
 import com.zlagoda.store.product.StoreProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -37,6 +38,14 @@ public class SaleServiceImpl implements SaleService {
     public SaleDto create(SaleDto saleDto) {
         Sale saleToCreate = converter.convertToEntity(saleDto);
         saleToCreate.setSellingPrice(storeProductService.getPriceByUpc(saleDto.getStoreProductUpc()));
+
+        int availableAmount = storeProductService.getAmountByUpc(saleDto.getStoreProductUpc());
+        if (saleDto.getProductNumber() > availableAmount)
+            throw new CheckCreatingException();
+        // TODO: 22.04.2023 error message
+
+        storeProductService.subtractAmountByUpc(saleDto.getStoreProductUpc(), saleDto.getProductNumber());
+
         Sale createdSale = repository.save(saleToCreate);
         return converter.convertToDto(createdSale);
     }

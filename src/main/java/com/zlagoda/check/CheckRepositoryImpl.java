@@ -1,14 +1,5 @@
 package com.zlagoda.check;
 
-import com.zlagoda.card.CustomerCard;
-import com.zlagoda.card.CustomerCardNotFoundException;
-import com.zlagoda.card.CustomerCardRepository;
-import com.zlagoda.employee.Employee;
-import com.zlagoda.employee.EmployeeNotFoundException;
-import com.zlagoda.employee.EmployeeRepository;
-import com.zlagoda.exception.EntityLinkException;
-import com.zlagoda.exception.NotFoundException;
-import com.zlagoda.product.ProductRepository;
 import com.zlagoda.sale.Sale;
 import com.zlagoda.sale.SaleRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,36 +18,52 @@ public class CheckRepositoryImpl implements CheckRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final CheckRowMapper rowMapper;
-    private final ProductRepository productRepository;
-    private final EmployeeRepository employeeRepository;
     private final CheckIdGenerator idGenerator;
-    private final CustomerCardRepository customerCardRepository;
     private final SaleRepository saleRepository;
 
     @Override
     public List<Check> findAll(Sort sort) {
-        String sql = "SELECT * " +
-                "FROM \"check\" " +
-                "ORDER BY " + sortToString(sort);
-        return jdbcTemplate.query(sql, rowMapper).stream()
-                .map(this::linkNestedEntities)
+        String sql = """
+                SELECT *
+                FROM "check"
+                INNER JOIN employee e on e.id_employee = "check".id_employee
+                LEFT JOIN customer_card cc on cc.card_number = "check".card_number
+                ORDER BY ?
+                 """;
+        return jdbcTemplate.query(sql, rowMapper, sortToString(sort)).stream()
+                .peek(this::linkSales)
                 .toList();
     }
 
     @Override
     public Optional<Check> findById(String checkNumber) {
-        String sql = "SELECT * " +
-                "FROM \"check\" " +
-                "WHERE check_number = ?";
+        String sql = """
+                SELECT *
+                FROM "check"
+                INNER JOIN employee e on e.id_employee = "check".id_employee
+                LEFT JOIN customer_card cc on cc.card_number = "check".card_number
+                WHERE check_number = ?
+                """;
         List<Check> checks = jdbcTemplate.query(sql, rowMapper, checkNumber);
-        return checks.isEmpty() ? Optional.empty() : Optional.of(linkNestedEntities(checks.get(0)));
+        if (!checks.isEmpty()) {
+            linkSales(checks.get(0));
+            return Optional.of(checks.get(0));
+        }
+        return Optional.empty();
     }
 
     @Override
     public Check save(Check check) {
         check.setCheckNumber(idGenerator.generate());
-        String sql = "INSERT INTO \"check\" (check_number, id_employee, card_number, print_date, sum_total, vat) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = """
+                INSERT INTO "check" (check_number,
+                                    id_employee,
+                                    card_number,
+                                    print_date,
+                                    sum_total,
+                                    vat)
+                      VALUES (?, ?, ?, ?, ?, ?)
+                               """;
         jdbcTemplate.update(sql,
                 check.getCheckNumber(),
                 check.getEmployee().getId(),
@@ -76,7 +83,11 @@ public class CheckRepositoryImpl implements CheckRepository {
     public Optional<Check> deleteById(String checkNumber) {
         Optional<Check> checkOptional = findById(checkNumber);
         if (checkOptional.isPresent()) {
-            String sql = "DELETE FROM \"check\" WHERE check_number = ?";
+            String sql = """
+                    DELETE
+                    FROM "check"
+                    WHERE check_number = ?
+                    """;
             jdbcTemplate.update(sql, checkNumber);
         }
         return checkOptional;
@@ -84,35 +95,11 @@ public class CheckRepositoryImpl implements CheckRepository {
 
     @Override
     public void deleteAll() {
-        String sql = "DELETE FROM \"check\"";
+        String sql = """
+                DELETE
+                FROM "check"
+                """;
         jdbcTemplate.update(sql);
-    }
-
-    private Check linkNestedEntities(Check check) {
-        try {
-            linkEmployee(check);
-            linkCustomerCard(check);
-            linkSales(check);
-        } catch (NotFoundException e) {
-            throw new EntityLinkException("cannot link nested entity to check", e);
-        }
-        return check;
-    }
-
-    private void linkEmployee(Check check) {
-        String employeeId = check.getEmployee().getId();
-        Employee employeeToLink = employeeRepository.findById(employeeId)
-                .orElseThrow(EmployeeNotFoundException::new);
-        check.setEmployee(employeeToLink);
-    }
-
-    private void linkCustomerCard(Check check) {
-        String customerCardNumber = check.getCustomerCard().getCardNumber();
-        if (customerCardNumber != null) {
-            CustomerCard customerCardToLink = customerCardRepository.findById(customerCardNumber)
-                    .orElseThrow(CustomerCardNotFoundException::new);
-            check.setCustomerCard(customerCardToLink);
-        }
     }
 
     private void linkSales(Check check) {
@@ -123,12 +110,62 @@ public class CheckRepositoryImpl implements CheckRepository {
 
     @Override
     public boolean existsById(String checkNumber) {
-        String sql = "SELECT COUNT(*) FROM \"check\" WHERE check_number = ?";
-        try {
-            int count = jdbcTemplate.queryForObject(sql, Integer.class, checkNumber);
-            return count > 0;
-        } catch (NullPointerException e) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM "check"
+                WHERE check_number = ?
+                 """;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, checkNumber);
+        if (count == null)
             return false;
-        }
+        return count > 0;
+    }
+
+    @Override
+    public List<Check> findAllEmployeeId(String id) {
+        String sql = """
+                SELECT *
+                FROM "check"
+                INNER JOIN employee e on e.id_employee = "check".id_employee
+                LEFT JOIN customer_card cc on cc.card_number = "check".card_number
+                WHERE e.id_employee = ?
+                """;
+        return jdbcTemplate.query(sql, rowMapper, id).stream()
+                .peek(this::linkSales)
+                .toList();
+    }
+
+    @Override
+    public void deleteAllByEmployeeId(String employeeId) {
+        String sql = """
+                DELETE
+                FROM "check"
+                WHERE id_employee = ?
+                """;
+        jdbcTemplate.update(sql, employeeId);
+    }
+
+    @Override
+    public void deleteByCustomerCardId(String cardNumber) {
+        String sql = """
+                DELETE
+                FROM "check"
+                WHERE card_number = ?
+                """;
+        jdbcTemplate.update(sql, cardNumber);
+    }
+
+    @Override
+    public List<Check> findByCardNumber(String cardNumber) {
+        String sql = """
+                SELECT *
+                FROM "check"
+                INNER JOIN employee e on e.id_employee = "check".id_employee
+                LEFT JOIN customer_card cc on cc.card_number = "check".card_number
+                WHERE "check".card_number = ?
+                 """;
+        return jdbcTemplate.query(sql, rowMapper, cardNumber).stream()
+                .peek(this::linkSales)
+                .toList();
     }
 }

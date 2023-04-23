@@ -83,10 +83,18 @@ public class ProductController {
 
     // Delete an product
     @GetMapping("/delete/{id}")
+    public String deleteProductForm(@PathVariable Long id, Model model) {
+        model.addAttribute("confirmation", productService.createDeleteConfirmation(id));
+        model.addAttribute("uriPrefix", "/product");
+        return "confirmation/delete";
+    }
+
+    @PostMapping("/delete/{id}")
     public String deleteProduct(@PathVariable Long id) {
         productService.deleteById(id);
         return "redirect:/product";
     }
+
 
     private void addDefaultAttributes(Model model) {
         model.addAttribute("categories",

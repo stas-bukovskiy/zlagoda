@@ -1,12 +1,14 @@
 package com.zlagoda.employee;
 
-import com.zlagoda.employee.authentication.EmployeePrincipal;
+import com.zlagoda.check.CheckService;
+import com.zlagoda.confiramtion.DeleteConfirmation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +20,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository repository;
     private final EmployeeConverter converter;
+    private final CheckService checkService;
 
     @Override
     public List<EmployeeDto> getAll(Sort sort) {
@@ -53,17 +56,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public EmployeeDto deleteById(String id) {
-        return repository.deleteById(id)
-                .map(converter::convertToDto)
-                .orElseThrow(EmployeeNotFoundException::new);
-    }
-
-    @Override
-    public Employee getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        EmployeePrincipal employeePrincipal = (EmployeePrincipal) authentication.getPrincipal();
-        return employeePrincipal.getEmployee();
+        EmployeeDto employeeToDelete = getById(id);
+        checkService.deleteAllByEmployeeId(id);
+        repository.deleteById(id);
+        return employeeToDelete;
     }
 
     @Override
@@ -100,5 +98,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public boolean isUsernameUniqueToUpdate(String id, String username) {
         return !repository.existsByUsernameAndIdIsNot(username, id);
+    }
+
+    @Override
+    public DeleteConfirmation createDeleteConfirmation(String id) {
+        DeleteConfirmation confirmation = new DeleteConfirmation();
+        confirmation.setId(id);
+        confirmation.setObjectName("Employee");
+        List<DeleteConfirmation> childRemovals = new ArrayList<>(checkService.createChildDeleteConfirmation(id));
+        confirmation.setChildRemovals(childRemovals);
+        return confirmation;
     }
 }

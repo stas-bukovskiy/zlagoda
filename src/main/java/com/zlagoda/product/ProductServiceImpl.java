@@ -1,8 +1,13 @@
 package com.zlagoda.product;
 
+import com.zlagoda.confiramtion.DeleteConfirmation;
+import com.zlagoda.store.product.StoreProductDeleteConfirmationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,6 +19,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository repository;
     private final ProductConverter converter;
+    private final StoreProductDeleteConfirmationService storeProductDeleteConfirmationService;
 
     @Override
     public List<ProductDto> getAll(Sort sort) {
@@ -47,10 +53,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
     public ProductDto deleteById(Long id) {
-        return repository.deleteById(id)
-                .map(converter::convertToDto)
-                .orElseThrow(ProductNotFoundException::new);
+        ProductDto productToDelete = getById(id);
+        storeProductDeleteConfirmationService.confirmDeletion(id);
+        repository.deleteById(id);
+        return productToDelete;
     }
 
     @Override
@@ -61,5 +69,14 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public boolean isNameUniqueToUpdate(Long id, String name) {
         return !repository.existsByNameAndIdIsNot(name, id);
+    }
+
+    @Override
+    public DeleteConfirmation createDeleteConfirmation(Long id) {
+        DeleteConfirmation confirmation = new DeleteConfirmation();
+        confirmation.setId(id.toString());
+        confirmation.setObjectName("Product");
+        confirmation.setChildRemovals(storeProductDeleteConfirmationService.createChildDeleteConfirmation(id));
+        return confirmation;
     }
 }

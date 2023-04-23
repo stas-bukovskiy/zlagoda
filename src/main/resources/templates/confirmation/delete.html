@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Delete Confirmation</title>
+
+    <div th:replace="~{fragments/header::header-css}"></div>
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header::header}"></div>
+
+<div class="container flex-grow-1">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title text-center mx-2"
+                            th:text="${'Confitm delete the ' + confirmation.objectName.toLowerCase() + ' with id = ' + confirmation.id + ''}"></h4>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${confirmation.childRemovals != null && confirmation.childRemovals.size() > 0}">
+                            <p th:text="${'If you delete this ' + confirmation.objectName.toLowerCase()} + ', also will be deleted:'"></p>
+                            <ul>
+                                <li th:each="childRemoval: ${confirmation.childRemovals}"
+                                    th:text="${childRemoval.objectName + ' with id = ' + childRemoval.id + ''}"></li>
+                            </ul>
+                        </div>
+                        <form class="d-flex justify-content-center mt-5"
+                              method="post" th:action="@{${uriPrefix} + '/delete/' + ${confirmation.id}}">
+                            <button class="btn btn-danger me-5" type="submit">Delete</button>
+                            <a class="btn btn-secondary" th:href="@{${uriPrefix}}">Cancel</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer::footer}"></div>
+
+</body>
+</html>

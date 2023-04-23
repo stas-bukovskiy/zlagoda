@@ -1,8 +1,13 @@
 package com.zlagoda.category;
 
+import com.zlagoda.confiramtion.DeleteConfirmation;
+import com.zlagoda.product.ProductDeleteConfirmationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,6 +19,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository repository;
     private final CategoryConverter converter;
+    private final ProductDeleteConfirmationService productDeleteConfirmationService;
 
     @Override
     public List<CategoryDto> getAll(Sort sort) {
@@ -47,10 +53,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
     public CategoryDto deleteById(Long id) {
-        return repository.deleteById(id)
-                .map(converter::convertToDto)
-                .orElseThrow(CategoryNotFoundException::new);
+        CategoryDto categoryToDelete = getById(id);
+        productDeleteConfirmationService.confirmDeletion(id);
+        repository.deleteById(id);
+        return categoryToDelete;
     }
 
     @Override
@@ -61,5 +69,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public boolean isNameUniqueToUpdate(Long id, String name) {
         return !repository.existsByNameAndIdIsNot(name, id);
+    }
+
+    @Override
+    public DeleteConfirmation createDeleteConfirmation(Long id) {
+        DeleteConfirmation confirmation = new DeleteConfirmation();
+        confirmation.setId(id.toString());
+        confirmation.setObjectName("Category");
+        confirmation.setChildRemovals(productDeleteConfirmationService.createChildDeleteConfirmation(id));
+        return confirmation;
     }
 }

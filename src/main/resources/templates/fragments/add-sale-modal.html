@@ -7,19 +7,16 @@
 <div th:fragment="add-sale-modal">
 
     <!-- Modal -->
-    <div aria-hidden="true" aria-labelledby="searchModalLabel" class="modal fade" id="searchModal" role="dialog"
-         tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+    <div aria-hidden="true" aria-labelledby="searchModalLabel" class="modal fade" id="searchModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable" role="dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="searchModalLabel">Search Products</h5>
-                    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
                 </div>
                 <div class="modal-body">
                     <form id="searchForm">
-                        <div class="form-group">
+                        <div class="form-group pb-3">
                             <label for="searchInput"></label><input class="form-control" id="searchInput"
                                                                     placeholder="Search by ID, Name, or Description"
                                                                     type="text"/>
@@ -31,15 +28,21 @@
                             <th>UPC</th>
                             <th>Name</th>
                             <th>Description</th>
+                            <th>Amount</th>
+                            <th></th>
                         </tr>
                         </thead>
                         <tbody id="productTableBody">
                         <!-- Products will be added here dynamically -->
                         <!-- Example of how to populate table rows from model attribute -->
-                        <tr onclick="selectProduct(this)" th:each="storeProduct : ${storeProducts}">
+                        <tr onClick="selectProduct(this)" th:each="storeProduct : ${storeProducts}">
                             <td th:text="${storeProduct.value.upc}"></td>
                             <td th:text="${storeProduct.value.product.name}"></td>
                             <td th:text="${storeProduct.value.product.characteristics}"></td>
+                            <td th:text="${storeProduct.value.productsNumber}"></td>
+                            <td><span class="text-danger border border-danger p-1"
+                                      th:if="${storeProduct.value.promotional}"
+                                      th:text="${'Promo'}"></span></td>
                         </tr>
                         </tbody>
                     </table>
@@ -88,10 +91,15 @@
                 const vatCell = rows[rows.length - 2].cells[VAT_COLUMN_INDEX];
                 vatCell.innerText = vat.toFixed(4);
                 const totalSumCell = rows[rows.length - 1].cells[SUM_COLUMN_INDEX];
-                totalSumCell.innerText = (sum + vat).toFixed(4);
+                const totalSum = (sum + vat) * (1 - getDiscountPercent() / 100);
+                totalSumCell.innerText = (totalSum).toFixed(4);
             }
 
             function selectProduct(row) {
+                const amount = row.querySelector("td:nth-child(4)").textContent;
+                if (amount === "0")
+                    return false;
+
                 const upc = row.querySelector("td:nth-child(1)").textContent;
                 const salesTable = document.getElementById("salesTable");
                 const rows = salesTable.rows;
@@ -162,7 +170,9 @@
                         // Show row and highlight matching text
                         products[i].style.display = "";
                         const regex = new RegExp(searchValue, "gi");
-                        products[i].querySelectorAll("td").forEach(function (td) {
+                        [products[i].querySelector("td:nth-child(1)"),
+                            products[i].querySelector("td:nth-child(2)"),
+                            products[i].querySelector("td:nth-child(3)")].forEach(function (td) {
                             td.innerHTML = td.innerHTML.replace(regex, function (match) {
                                 return '<span class="highlight">' + match + '</span>';
                             });
@@ -191,17 +201,32 @@
                 filterProducts(); // Call filterProducts function
             });
 
-            document.getElementById("cardNumber").addEventListener("input", function (event) {
-                console.log("yes")
-                saveCheckToSession([[${check}]]);
-            });
-
             const amountInputs = document.getElementsByClassName("amount-input");
 
             // Add an "input" event listener to each input element
             for (let i = 0; i < amountInputs.length; i++) {
                 addCountResultsEventListener(amountInputs[i]);
             }
+
+            function changeDiscountText() {
+                const userCardDiscountSpan = document.getElementById("userCardDiscount");
+                userCardDiscountSpan.innerText = getDiscountPercent();
+
+            }
+
+            function getDiscountPercent() {
+                const userCardNumber = document.getElementById("cardNumber").value;
+                if (userCardNumber === "") {
+                    return 0;
+                } else {
+                    return ([[${customerCards}]])[userCardNumber].percent;
+                }
+            }
+
+            document.getElementById("cardNumber").addEventListener("input", function (event) {
+                changeDiscountText();
+                countSalesResults();
+            });
 
         </script>
     </div>

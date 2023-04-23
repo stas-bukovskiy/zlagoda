@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 
@@ -24,7 +24,7 @@ public class Check implements Entity {
     private Employee employee;
     private CustomerCard customerCard;
     private Set<Sale> sales;
-    private Date printDate;
+    private LocalDateTime printDate;
     private BigDecimal totalSum;
     private BigDecimal vat;
 

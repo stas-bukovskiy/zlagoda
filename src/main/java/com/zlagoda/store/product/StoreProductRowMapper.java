@@ -14,17 +14,29 @@ public class StoreProductRowMapper implements RowMapper<StoreProduct> {
 
     @Override
     public StoreProduct mapRow(ResultSet rs, int rowNum) throws SQLException {
-        String promStoreProductUPC = rs.getString("UPC_prom");
+        String promStoreProductUPC = rs.getString("prom_upc");
+        Product product = new Product(
+                rs.getLong("id_product"),
+                rs.getString("product_name"),
+                rs.getString("characteristics"),
+                rs.getLong("category_number")
+        );
+
         return new StoreProduct(
-                rs.getString("UPC"),
+                rs.getString("upc"),
                 rs.getBigDecimal("selling_price"),
                 rs.getInt("products_number"),
                 rs.getBoolean("promotional_product"),
-                Product.builder().id(rs.getLong("id_product")).build(),
+                product,
                 promStoreProductUPC == null ? null :
-                        StoreProduct.builder()
-                                .upc(rs.getString("UPC_prom"))
-                                .build()
+                        new StoreProduct(
+                                promStoreProductUPC,
+                                rs.getBigDecimal("prom_selling_price"),
+                                rs.getInt("prom_products_number"),
+                                rs.getBoolean("prom_promotional_product"),
+                                product,
+                                null
+                        )
         );
     }
 }

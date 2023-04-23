@@ -20,6 +20,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/webjars/**").permitAll()
                         .requestMatchers("/css/**").permitAll()
+                        .requestMatchers("/js/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form

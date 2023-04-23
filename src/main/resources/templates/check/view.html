@@ -13,7 +13,11 @@
 
 <div class="container-sm flex-grow-1">
     <h1>View Check</h1>
-    <p th:text="${'Customer card: ' + check.cardNumber}"></p>
+    <p>Customer card: <a th:href="@{/customer/card/edit/{id}(id=${check.cardNumber})}"
+                         th:if="${check.cardNumber != null}" th:text="${check.cardNumber}"></a></p>
+    <p>Discount: <span
+            th:text="${check.cardNumber == null ? '0' : customerCards.get(check.cardNumber).percent}">0</span>%</p>
+
     <table class="table">
         <thead>
         <tr>
@@ -27,10 +31,12 @@
         <thead>
         <tbody id="salesTable">
         <tr th:each="sale : ${check.sales}">
-            <td th:value="${sale.storeProductUpc}"></td>
-            <td th:text="${storeProducts.get(sale.storeProductUpc).product.name}"></td>
+            <td><a th:href="@{/store/product/edit/{upc}(upc=${sale.storeProductUpc})}"
+                   th:text="${sale.storeProductUpc}"></a></td>
+            <td><a th:href="@{/product/edit/{id}(id=${storeProducts.get(sale.storeProductUpc).product.id})}"
+                   th:text="${storeProducts.get(sale.storeProductUpc).product.name}"></a></td>
             <td th:text="${sale.sellingPrice}"></td>
-            <td th:value="${sale.productNumber}"></td>
+            <td th:text="${sale.productNumber}"></td>
             <td th:text="${sale.sellingPrice * sale.productNumber}"></td>
             <td th:text="${sale.sellingPrice * sale.productNumber * vatCoefficient}"></td>
         </tr>
@@ -39,8 +45,8 @@
             <th></th>
             <th></th>
             <th></th>
-            <th class="table-active" th:value="${check.totalSum - check.vat}">0.0000</th>
-            <th class="table-active" th:value="${check.vat}">0.0000</th>
+            <th class="table-active" th:text="${check.totalSum - check.vat}">0.0000</th>
+            <th class="table-active" th:text="${check.vat}">0.0000</th>
             <th></th>
         </tr>
         <tr>
@@ -48,7 +54,7 @@
             <th></th>
             <th></th>
             <th></th>
-            <th class="table-dark" colspan="2" th:value="${check.totalSum}">0.0000</th>
+            <th class="table-dark" colspan="2" th:text="${check.totalSum}">0.0000</th>
             <th></th>
         </tr>
         </tbody>

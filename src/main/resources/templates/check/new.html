@@ -25,10 +25,11 @@
         <div class="form-group mb-3">
             <label for="cardNumber">User card number:</label>
             <select class="form-select" id="cardNumber" th:field="*{cardNumber}">
-                <option th:value="null">Choose card</option>
+                <option th:value="${null}">Choose card</option>
                 <option th:each="customerCard : ${customerCards.values()}" th:text="${customerCard.cardNumber}"
                         th:value="${customerCard.cardNumber}"></option>
             </select>
+            <p>Discount: <span id="userCardDiscount">0</span>%</p>
         </div>
         <table class="table">
             <thead>
@@ -60,8 +61,8 @@
                            th:name="|sales[${saleStat.index}].productNumber|" th:value="${sale.productNumber}"
                            type="number">
                 </label></td>
-                <td th:text="${sale.sellingPrice * sale.productNumber}"></td>
-                <td th:text="${sale.sellingPrice * sale.productNumber * vatCoefficient}"></td>
+                <td th:text="${storeProducts.get(sale.storeProductUpc).sellingPrice * sale.productNumber}"></td>
+                <td th:text="${storeProducts.get(sale.storeProductUpc).sellingPrice * sale.productNumber * vatCoefficient}"></td>
                 <td>
                     <button class="btn btn-danger" onclick="removeSaleRow(this)" type="button">
                         Delete
@@ -88,7 +89,7 @@
             </tbody>
         </table>
         <div class="d-flex justify-content-center my-2">
-            <button class="btn btn-primary" data-target="#searchModal" data-toggle="modal" type="button">
+            <button class="btn btn-primary" data-bs-target="#searchModal" data-bs-toggle="modal" type="button">
                 Add sale
             </button>
         </div>

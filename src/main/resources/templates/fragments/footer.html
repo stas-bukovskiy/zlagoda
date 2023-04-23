@@ -1,5 +1,5 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
       lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title></title>
@@ -24,11 +24,14 @@
                 <small>All rights reserved.</small>
             </p>
         </div>
-
-        <script th:src="@{/webjars/bootstrap/5.2.3/js/bootstrap.min.js}"
-                type="text/javascript"></script>
     </footer>
 
+    <script src="/webjars/jquery/3.6.4/jquery.min.js" th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"
+            type="text/javascript"></script>
+    <script src="/webjars/popper.js/2.9.3/umd/popper.js" th:src="@{/webjars/popper.js/2.9.3/umd/popper.js}"
+            type="text/javascript"></script>
+    <script src="/webjars/bootstrap/5.2.3/js/bootstrap.min.js" th:src="@{/webjars/bootstrap/5.2.3/js/bootstrap.min.js}"
+            type="text/javascript"></script>
 </div>
 </body>
 </html>

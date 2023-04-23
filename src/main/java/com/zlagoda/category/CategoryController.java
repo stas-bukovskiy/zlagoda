@@ -72,6 +72,13 @@ public class CategoryController {
 
     // Delete a category
     @GetMapping("/delete/{id}")
+    public String deleteCategoryForm(@PathVariable Long id, Model model) {
+        model.addAttribute("confirmation", categoryService.createDeleteConfirmation(id));
+        model.addAttribute("uriPrefix", "/category");
+        return "confirmation/delete";
+    }
+
+    @PostMapping("/delete/{id}")
     public String deleteCategory(@PathVariable Long id) {
         categoryService.deleteById(id);
         return "redirect:/category";

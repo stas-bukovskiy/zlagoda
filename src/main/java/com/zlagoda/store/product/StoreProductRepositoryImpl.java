@@ -1,10 +1,5 @@
 package com.zlagoda.store.product;
 
-import com.zlagoda.exception.EntityLinkException;
-import com.zlagoda.exception.NotFoundException;
-import com.zlagoda.product.Product;
-import com.zlagoda.product.ProductNotFoundException;
-import com.zlagoda.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,25 +17,59 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final StoreProductRowMapper rowMapper;
-    private final ProductRepository productRepository;
 
     @Override
     public List<StoreProduct> findAll(Sort sort) {
-        String sql = "SELECT * " +
-                "FROM store_product " +
-                "ORDER BY " + sortToString(sort);
-        return jdbcTemplate.query(sql, rowMapper).stream()
-                .map(this::linkNestedEntities)
-                .toList();
+        String sql = """
+                SELECT sp.upc                      as "upc",
+                       sp.upc_prom                 as "upc_prom",
+                       sp.id_product               as "id_product",
+                       sp.selling_price            as "selling_price",
+                       sp.products_number          as "products_number",
+                       sp.promotional_product      as "promotional_product",
+                       p.category_number           as "category_number",
+                       p.product_name              as "product_name",
+                       p.characteristics           as "characteristics",
+                       prom_sp.upc                 as "prom_upc",
+                       prom_sp.upc_prom            as "prom_upc_prom",
+                       prom_sp.id_product          as "prom_id_product",
+                       prom_sp.selling_price       as "prom_selling_price",
+                       prom_sp.products_number     as "prom_products_number",
+                       prom_sp.promotional_product as "prom_promotional_product"
+                FROM store_product sp
+                         JOIN product p on p.id_product = sp.id_product
+                         LEFT JOIN store_product prom_sp on prom_sp.upc = sp.upc_prom
+                ORDER BY ?
+                """;
+
+        return jdbcTemplate.query(sql, rowMapper, sortToString(sort));
     }
 
     @Override
     public Optional<StoreProduct> findById(String upc) {
-        String sql = "SELECT * " +
-                "FROM store_product " +
-                "WHERE upc = ?";
+        String sql = """
+                SELECT sp.upc                      as "upc",
+                       sp.upc_prom                 as "upc_prom",
+                       sp.id_product               as "id_product",
+                       sp.selling_price            as "selling_price",
+                       sp.products_number          as "products_number",
+                       sp.promotional_product      as "promotional_product",
+                       p.category_number           as "category_number",
+                       p.product_name              as "product_name",
+                       p.characteristics           as "characteristics",
+                       prom_sp.upc                 as "prom_upc",
+                       prom_sp.upc_prom            as "prom_upc_prom",
+                       prom_sp.id_product          as "prom_id_product",
+                       prom_sp.selling_price       as "prom_selling_price",
+                       prom_sp.products_number     as "prom_products_number",
+                       prom_sp.promotional_product as "prom_promotional_product"
+                FROM store_product sp
+                         JOIN product p on p.id_product = sp.id_product
+                         LEFT JOIN store_product prom_sp on prom_sp.upc = sp.upc_prom
+                WHERE sp.upc = ?;
+                """;
         List<StoreProduct> store_products = jdbcTemplate.query(sql, rowMapper, upc);
-        return store_products.isEmpty() ? Optional.empty() : Optional.of(linkNestedEntities(store_products.get(0)));
+        return store_products.isEmpty() ? Optional.empty() : Optional.of(store_products.get(0));
     }
 
     @Override
@@ -52,7 +81,7 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
                 storeProduct.getPromStoreProduct() == null ? null : storeProduct.getPromStoreProduct().getUpc(),
                 storeProduct.getProduct().getId(),
                 storeProduct.getSellingPrice(),
-                storeProduct.getSellingPrice(),
+                storeProduct.getProductsNumber(),
                 storeProduct.isPromotional());
         return storeProduct;
     }
@@ -102,35 +131,59 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
     @Override
     public Optional<BigDecimal> findPriceById(String upc) {
         String sql = "SELECT selling_price " +
-                "FROM store_product " +
-                "WHERE upc = ?";
+                     "FROM store_product " +
+                     "WHERE upc = ?";
         BigDecimal price = jdbcTemplate.queryForObject(sql, BigDecimal.class, upc);
         return price == null ? Optional.empty() : Optional.of(price);
 
     }
 
-    private StoreProduct linkNestedEntities(StoreProduct storeProduct) {
-        try {
-            linkProduct(storeProduct);
-            if (storeProduct.getPromStoreProduct() != null)
-                linkPromStoreProduct(storeProduct);
-        } catch (NotFoundException e) {
-            throw new EntityLinkException("cannot link nested entity to store product", e);
-        }
-        return storeProduct;
+    @Override
+    public Optional<Integer> findProductsNumberById(String upc) {
+        String sql = """
+                SELECT products_number
+                FROM store_product
+                WHERE upc = ?
+                """;
+        Integer productsNumber = jdbcTemplate.queryForObject(sql, Integer.class, upc);
+        return productsNumber == null ? Optional.empty() : Optional.of(productsNumber);
     }
 
-    private void linkPromStoreProduct(StoreProduct storeProduct) {
-        String promStoreProductUpc = storeProduct.getPromStoreProduct().getUpc();
-        StoreProduct promStoreProduct = findById(promStoreProductUpc)
-                .orElseThrow(StoreProductNotFoundException::new);
-        promStoreProduct.setPromStoreProduct(promStoreProduct);
+    @Override
+    public void subtractAmountByUpc(String upc, int delta) {
+        String sql = """
+                UPDATE store_product
+                SET products_number = products_number - ?
+                WHERE upc = ?
+                """;
+        jdbcTemplate.update(sql, delta, upc);
     }
 
-    private void linkProduct(StoreProduct storeProduct) {
-        Long productId = storeProduct.getProduct().getId();
-        Product product = productRepository.findById(productId)
-                .orElseThrow(ProductNotFoundException::new);
-        storeProduct.setProduct(product);
+    @Override
+    public List<StoreProduct> findAllByProductId(Long productId) {
+        String sql = """
+                SELECT sp.upc                      as "upc",
+                       sp.upc_prom                 as "upc_prom",
+                       sp.id_product               as "id_product",
+                       sp.selling_price            as "selling_price",
+                       sp.products_number          as "products_number",
+                       sp.promotional_product      as "promotional_product",
+                       p.category_number           as "category_number",
+                       p.product_name              as "product_name",
+                       p.characteristics           as "characteristics",
+                       prom_sp.upc                 as "prom_upc",
+                       prom_sp.upc_prom            as "prom_upc_prom",
+                       prom_sp.id_product          as "prom_id_product",
+                       prom_sp.selling_price       as "prom_selling_price",
+                       prom_sp.products_number     as "prom_products_number",
+                       prom_sp.promotional_product as "prom_promotional_product"
+                FROM store_product sp
+                         JOIN product p on p.id_product = sp.id_product
+                         LEFT JOIN store_product prom_sp on prom_sp.upc = sp.upc_prom
+                WHERE sp.id_product = ?
+                """;
+
+        return jdbcTemplate.query(sql, rowMapper, productId);
     }
+
 }

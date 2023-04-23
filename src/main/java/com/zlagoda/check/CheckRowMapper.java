@@ -1,7 +1,8 @@
 package com.zlagoda.check;
 
-import com.zlagoda.card.CustomerCard;
-import com.zlagoda.employee.Employee;
+import com.zlagoda.card.CustomerCardRowMapper;
+import com.zlagoda.employee.EmployeeRowMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
@@ -10,15 +11,20 @@ import java.sql.SQLException;
 import java.util.LinkedHashSet;
 
 @Component
+@RequiredArgsConstructor
 public class CheckRowMapper implements RowMapper<Check> {
+
+    private final EmployeeRowMapper employeeRowMapper;
+    private final CustomerCardRowMapper customerCardRowMapper;
+
     @Override
     public Check mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new Check(
                 rs.getString("check_number"),
-                Employee.builder().id(rs.getString("id_employee")).build(),
-                CustomerCard.builder().cardNumber(rs.getString("card_number")).build(),
+                employeeRowMapper.mapRow(rs, -1),
+                customerCardRowMapper.mapRow(rs, -1),
                 new LinkedHashSet<>(),
-                rs.getDate("print_date"),
+                rs.getTimestamp("print_date").toLocalDateTime(),
                 rs.getBigDecimal("sum_total"),
                 rs.getBigDecimal("vat")
         );

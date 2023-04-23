@@ -83,8 +83,28 @@ public class StoreProductController {
         return "redirect:/store/product";
     }
 
+
+    @GetMapping("/make/prom/{upc}")
+    public String makeProm(@PathVariable String upc) {
+        storeProductService.makeStoreProductPromotional(upc);
+        return "redirect:/store/product";
+    }
+
+    @GetMapping("/unmake/prom/{upc}")
+    public String unmakeProm(@PathVariable String upc) {
+        storeProductService.unmakeStoreProductPromotional(upc);
+        return "redirect:/store/product";
+    }
+
     // Delete an storeProduct
     @GetMapping("/delete/{upc}")
+    public String deleteStoreProductForm(@PathVariable String upc, Model model) {
+        model.addAttribute("confirmation", storeProductService.createDeleteConfirmation(upc));
+        model.addAttribute("uriPrefix", "/store/product");
+        return "confirmation/delete";
+    }
+
+    @PostMapping("/delete/{upc}")
     public String deleteStoreProduct(@PathVariable String upc) {
         storeProductService.deleteById(upc);
         return "redirect:/store/product";

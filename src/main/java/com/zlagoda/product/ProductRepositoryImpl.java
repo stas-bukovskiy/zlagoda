@@ -23,25 +23,31 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public List<Product> findAll(Sort sort) {
-        String sql = "SELECT * " +
-                "FROM product " +
-                "ORDER BY " + sortToString(sort);
-        return jdbcTemplate.query(sql, rowMapper);
+        String sql = """
+                SELECT *
+                FROM product
+                ORDER BY ?
+                """;
+        return jdbcTemplate.query(sql, rowMapper, sortToString(sort));
     }
 
     @Override
     public Optional<Product> findById(Long id) {
-        String sql = "SELECT * " +
-                "FROM product " +
-                "WHERE id_product = ?";
+        String sql = """
+                SELECT *
+                FROM product
+                WHERE id_product = ?
+                """;
         List<Product> products = jdbcTemplate.query(sql, rowMapper, id);
         return products.isEmpty() ? Optional.empty() : Optional.of(products.get(0));
     }
 
     @Override
     public Product save(Product product) {
-        String sql = "INSERT INTO product (category_number, product_name, characteristics) " +
-                "VALUES (?, ?, ?)";
+        String sql = """
+                INSERT INTO product (category_number, product_name, characteristics)
+                VALUES (?, ?, ?)
+                """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> {
@@ -59,9 +65,11 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public Product update(Long id, Product product) {
-        String sql = "UPDATE product " +
-                "SET category_number=?, product_name=?, characteristics=? " +
-                "WHERE id_product=?";
+        String sql = """
+                UPDATE product
+                SET category_number=?, product_name=?, characteristics=?
+                WHERE id_product=?;
+                """;
         jdbcTemplate.update(sql,
                 product.getCategoryId(),
                 product.getName(),
@@ -74,7 +82,11 @@ public class ProductRepositoryImpl implements ProductRepository {
     public Optional<Product> deleteById(Long id) {
         Optional<Product> productOptional = findById(id);
         if (productOptional.isPresent()) {
-            String sql = "DELETE FROM product WHERE id_product = ?";
+            String sql = """
+                    DELETE
+                    FROM product
+                    WHERE id_product = ?;
+                    """;
             jdbcTemplate.update(sql, id);
         }
         return productOptional;
@@ -82,40 +94,59 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public void deleteAll() {
-        String sql = "DELETE FROM product";
+        String sql = """
+                DELETE
+                FROM product;
+                """;
         jdbcTemplate.update(sql);
     }
 
     @Override
     public boolean existsByName(String name) {
-        String sql = "SELECT COUNT(*) FROM product WHERE product_name = ?";
-        try {
-            int count = jdbcTemplate.queryForObject(sql, Integer.class, name);
-            return count > 0;
-        } catch (NullPointerException e) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM product
+                WHERE product_name = ?;
+                """;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name);
+        if (count == null)
             return false;
-        }
+        return count > 0;
     }
 
     @Override
     public boolean existsById(Long id) {
-        String sql = "SELECT COUNT(*) FROM product WHERE id_product = ?";
-        try {
-            int count = jdbcTemplate.queryForObject(sql, Integer.class, id);
-            return count > 0;
-        } catch (NullPointerException e) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM product
+                WHERE id_product = ?;
+                """;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        if (count == null)
             return false;
-        }
+        return count > 0;
+    }
+
+    @Override
+    public List<Product> findAllByCategoryId(Long categoryId) {
+        String sql = """
+                SELECT *
+                FROM product
+                WHERE category_number = ?
+                """;
+        return jdbcTemplate.query(sql, rowMapper, categoryId);
     }
 
     @Override
     public boolean existsByNameAndIdIsNot(String name, Long id) {
-        String sql = "SELECT COUNT(*) FROM product WHERE product_name = ? AND id_product != ?";
-        try {
-            int count = jdbcTemplate.queryForObject(sql, Integer.class, name, id);
-            return count > 0;
-        } catch (NullPointerException e) {
+        String sql = """
+                SELECT COUNT(*)
+                FROM product
+                WHERE product_name = ? AND id_product != ?;
+                """;
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name);
+        if (count == null)
             return false;
-        }
+        return count > 0;
     }
 }
