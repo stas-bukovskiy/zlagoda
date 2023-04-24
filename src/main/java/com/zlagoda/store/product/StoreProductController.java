@@ -2,18 +2,17 @@ package com.zlagoda.store.product;
 
 import com.zlagoda.product.ProductDto;
 import com.zlagoda.product.ProductService;
-import com.zlagoda.product.ProductServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static com.zlagoda.store.product.StoreProductServiceImpl.DEFAULT_SORT;
 
 
 @Controller
@@ -27,11 +26,36 @@ public class StoreProductController {
 
     // List all storeProducts
     @GetMapping
-    public String listStoreProducts(Model model) {
-        model.addAttribute("storeProducts", storeProductService.getAll(DEFAULT_SORT));
+    public String listStoreProducts(@RequestParam(value = "upc", required = false, defaultValue = "null") String upc,
+                                    Model model) {
+        model.addAttribute("storeProducts",
+                (upc.equals("null")) ? storeProductService.getAll() : List.of(storeProductService.getById(upc)));
         addDefaultAttributes(model);
         return "store/product/list";
     }
+
+    @GetMapping("/promotional")
+    public String listPromotionalStoreProducts(@RequestParam(value = "sort", required = false, defaultValue = "product_name") String sort,
+                                               Model model) {
+        model.addAttribute("storeProducts", storeProductService.getAllPromotional(Sort.by(sort)));
+        addDefaultAttributes(model);
+        return "store/product/list";
+    }
+
+    @GetMapping("/not-promotional")
+    public String listNotPromotionalStoreProducts(@RequestParam(value = "sort", required = false, defaultValue = "product_name") String sort,
+                                                  Model model) {
+        model.addAttribute("storeProducts", storeProductService.getAllNotPromotional(Sort.by(sort)));
+        addDefaultAttributes(model);
+        return "store/product/list";
+    }
+
+
+    @GetMapping("/upc-search")
+    public String createSearchForm() {
+        return "store/product/upc-search";
+    }
+
 
     // Create a new storeProduct
     @GetMapping("/new")
@@ -44,6 +68,7 @@ public class StoreProductController {
     @PostMapping("/new")
     public String createStoreProduct(@ModelAttribute @Valid StoreProductDto storeProductDto,
                                      BindingResult bindingResult, Model model) {
+        storeProductService.checkProductIdToCreate(storeProductDto).forEach(bindingResult::addError);
         if (!storeProductService.isUniqueToCreate(storeProductDto.getUpc()))
             bindingResult.rejectValue("upc", "", "product upc is not unique");
         if (bindingResult.hasErrors()) {
@@ -71,6 +96,7 @@ public class StoreProductController {
     public String updateStoreProduct(@PathVariable String upc,
                                      @ModelAttribute @Valid StoreProductDto storeProductDto,
                                      BindingResult bindingResult, Model model) {
+        storeProductService.checkProductIdToUpdate(storeProductDto).forEach(bindingResult::addError);
         if (!storeProductService.isUniqueToUpdate(upc, storeProductDto.getUpc()))
             bindingResult.rejectValue("upc", "", "product upc is not unique");
         if (bindingResult.hasErrors()) {
@@ -111,7 +137,7 @@ public class StoreProductController {
     }
 
     private void addDefaultAttributes(Model model) {
-        model.addAttribute("products", productService.getAll(ProductServiceImpl.DEFAULT_SORT).stream()
+        model.addAttribute("products", productService.getAll().stream()
                 .collect(Collectors.toMap(ProductDto::getId, Function.identity())));
     }
 }

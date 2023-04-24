@@ -12,7 +12,7 @@ import java.util.Locale;
 
 public class LocalDateTimeFormatter implements Formatter<LocalDateTime> {
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm");
     @Autowired
     private MessageSource messageSource;
 

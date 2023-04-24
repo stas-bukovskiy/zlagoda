@@ -20,8 +20,8 @@ public class SaleServiceImpl implements SaleService {
     private final StoreProductService storeProductService;
 
     @Override
-    public List<SaleDto> getAll(Sort sort) {
-        return repository.findAll(sort)
+    public List<SaleDto> getAll() {
+        return repository.findAll()
                 .stream()
                 .map(converter::convertToDto)
                 .toList();
@@ -65,7 +65,5 @@ public class SaleServiceImpl implements SaleService {
                 .map(converter::convertToDto)
                 .orElseThrow(SaleNotFoundException::new);
     }
-
-    // TODO: 18.04.2023 check for uniqueness 
 
 }

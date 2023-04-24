@@ -55,7 +55,7 @@ public class EmployeeDto implements DTO {
     private String dateOfStart;
 
     @NotNull(message = "phone number can not be null")
-    @Pattern(regexp = "^\\+?\\d{10,13}$", message = "phone number can be as example: '+380123456789")
+    @Pattern(regexp = "^\\+?\\d{10,12}$", message = "phone number can be as example: '+380123456789")
     private String phoneNumber;
 
     @NotNull(message = "city can not be null")

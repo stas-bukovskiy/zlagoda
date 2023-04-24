@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Count Sold Amount</title>
+
+    <div th:replace="~{fragments/header::header-css}"></div>
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header::header}"></div>
+
+<div class="container-sm flex-grow-1">
+    <div class="card text-center mt-5">
+        <div class="card-header">
+            <h1>Count Sold Amount</h1>
+        </div>
+        <div class="card-body">
+
+            <h3 th:if="${amount != null}" th:text="${'Result: ' + amount}"></h3>
+
+            <form method="post" th:action="@{/check/count/amount}" th:object="${countData}">
+                <div th:if="${errors != null}">
+                    <div class="alert alert-danger">
+                        <ul>
+                            <li th:each="error : ${errors}" th:text="${error.getDefaultMessage()}"></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="employeeId">Products: </label>
+                    <select class="form-select my-3" id="employeeId" name="employeeId" th:field="*{id}">
+                        <option selected value="">All</option>
+                        <option th:each="product : ${products}" th:text="${product.name}"
+                                th:value="${product.id}"></option>
+                    </select>
+                    <label for="from">From</label>
+                    <input class="form-control my-3" id="from" name="from" required th:field="*{from}"
+                           type="datetime-local">
+                    <label for="to">To</label>
+                    <input class="form-control my-3" id="to" name="to" required th:field="*{to}" type="datetime-local">
+                    <div class="d-flex justify-content-center py-3">
+                        <button class="btn btn-success btn-lg me-5" type="submit">Count</button>
+                        <a class="btn btn-secondary btn-lg" th:href="@{/check}">Cancel</a>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer::footer}"></div>
+
+</body>
+</html>

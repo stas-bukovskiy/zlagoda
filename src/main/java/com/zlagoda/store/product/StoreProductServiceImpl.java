@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.FieldError;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.zlagoda.utils.RandomUtils.randomUPC;
@@ -19,8 +21,6 @@ import static com.zlagoda.utils.RandomUtils.randomUPC;
 @RequiredArgsConstructor
 public class StoreProductServiceImpl implements StoreProductService {
 
-    public final static Sort DEFAULT_SORT = Sort.by("sp.upc");
-
     private final StoreProductRepository repository;
     private final StoreProductConverter converter;
     private final StoreProductProperties properties;
@@ -28,8 +28,8 @@ public class StoreProductServiceImpl implements StoreProductService {
 
 
     @Override
-    public List<StoreProductDto> getAll(Sort sort) {
-        return repository.findAll(sort)
+    public List<StoreProductDto> getAll() {
+        return repository.findAll()
                 .stream()
                 .map(converter::convertToDto)
                 .toList();
@@ -80,6 +80,20 @@ public class StoreProductServiceImpl implements StoreProductService {
         saleDeleteConfirmationService.confirmDeletion(upc);
         repository.deleteById(upc);
         return storeProductToDelete;
+    }
+
+    @Override
+    public List<StoreProductDto> getAllPromotional(Sort sort) {
+        return repository.findAllPromotional(sort).stream()
+                .map(converter::convertToDto)
+                .toList();
+    }
+
+    @Override
+    public List<StoreProductDto> getAllNotPromotional(Sort sort) {
+        return repository.findAllNotPromotional(sort).stream()
+                .map(converter::convertToDto)
+                .toList();
     }
 
     @Override
@@ -156,6 +170,26 @@ public class StoreProductServiceImpl implements StoreProductService {
         confirmation.setObjectName("Store product");
         confirmation.setChildRemovals(saleDeleteConfirmationService.createChildDeleteConfirmation(upc));
         return confirmation;
+    }
+
+    @Override
+    public List<FieldError> checkProductIdToCreate(StoreProductDto storeProductDto) {
+        List<FieldError> errors = new ArrayList<>();
+        if (storeProductDto.getProduct() == null || storeProductDto.getProduct().getId() == null)
+            errors.add(new FieldError("Store product", "product", "Product can not be null"));
+        if (repository.existsByProductId(storeProductDto.getProduct().getId()))
+            errors.add(new FieldError("Store product", "product", "Store product with such product already created"));
+        return errors;
+    }
+
+    @Override
+    public List<FieldError> checkProductIdToUpdate(StoreProductDto storeProductDto) {
+        List<FieldError> errors = new ArrayList<>();
+        if (storeProductDto.getProduct() == null || storeProductDto.getProduct().getId() == null)
+            errors.add(new FieldError("Store product", "product", "Product can not be null"));
+        if (repository.existsByProductIdAndUpcIsNot(storeProductDto.getProduct().getId(), storeProductDto.getUpc()))
+            errors.add(new FieldError("Store product", "product", "Store product with such product already created"));
+        return errors;
     }
 
 

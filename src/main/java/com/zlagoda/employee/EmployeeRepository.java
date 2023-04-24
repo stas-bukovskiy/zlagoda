@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EmployeeRepository extends Repository<Employee, String> {
+
+    List<Employee> findPhoneNumbersAndAddressesBySurname(String surname);
+
     boolean existsByUsername(String username);
 
     Optional<Employee> findByUsername(String username);

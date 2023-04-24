@@ -9,7 +9,6 @@ import com.zlagoda.sale.SaleDto;
 import com.zlagoda.sale.SaleService;
 import com.zlagoda.store.product.StoreProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,7 @@ import org.springframework.validation.FieldError;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +27,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CheckServiceImpl implements CheckService {
-
-    public final static Sort DEFAULT_SORT = Sort.by("check_number");
 
     private final CheckProperties properties;
     private final CheckConverter converter;
@@ -39,8 +37,8 @@ public class CheckServiceImpl implements CheckService {
 
 
     @Override
-    public List<CheckDto> getAll(Sort sort) {
-        return repository.findAll(sort)
+    public List<CheckDto> getAll() {
+        return repository.findAll()
                 .stream()
                 .map(converter::convertToDto)
                 .toList();
@@ -135,6 +133,37 @@ public class CheckServiceImpl implements CheckService {
     @Override
     public void deleteAllByEmployeeId(String employeeId) {
         repository.deleteAllByEmployeeId(employeeId);
+    }
+
+    @Override
+    public List<CheckDto> getTodayChecksOfCurrentUser() {
+        Employee currentUser = getCurrentUser();
+        return repository.findAllByEmployeeIdAndForCurrentDay(currentUser.getId()).stream()
+                .map(converter::convertToDto)
+                .toList();
+    }
+
+    @Override
+    public List<CheckDto> getAllByPrintDateBetween(Timestamp from, Timestamp to) {
+        Employee currentUser = getCurrentUser();
+        return repository.findAllAndEmployeeIdByPrintDateBetween(currentUser.getId(), from, to).stream()
+                .map(converter::convertToDto)
+                .toList();
+    }
+
+    @Override
+    public BigDecimal countTotalSumByEmployeeId(String employeeId, Timestamp from, Timestamp to) {
+        return repository.countTotalSumByEmployeeId(employeeId, from, to);
+    }
+
+    @Override
+    public BigDecimal countTotalSum(Timestamp from, Timestamp to) {
+        return repository.countTotalSum(from, to);
+    }
+
+    @Override
+    public Long countTotalAmountSoldByProductId(Long productId, Timestamp from, Timestamp to) {
+        return repository.countTotalAmountSoldByProductId(productId, from, to);
     }
 
     public Employee getCurrentUser() {

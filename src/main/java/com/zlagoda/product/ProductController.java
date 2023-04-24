@@ -2,7 +2,6 @@ package com.zlagoda.product;
 
 import com.zlagoda.category.CategoryDto;
 import com.zlagoda.category.CategoryService;
-import com.zlagoda.category.CategoryServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -12,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static com.zlagoda.product.ProductServiceImpl.DEFAULT_SORT;
 
 
 @Controller
@@ -27,11 +24,29 @@ public class ProductController {
 
     // List all products
     @GetMapping
-    public String listProducts(Model model) {
-        model.addAttribute("products", productService.getAll(DEFAULT_SORT));
+    public String listProducts(@RequestParam(value = "category_id", required = false, defaultValue = "-1") long categoryId,
+                               Model model) {
+        model.addAttribute("products", (categoryId == -1) ? productService.getAll() : productService.getALlByCategoryId(categoryId));
         addDefaultAttributes(model);
         return "product/list";
     }
+
+    @GetMapping("/category-search")
+    public String createSearchForm(Model model) {
+        model.addAttribute("categories", categoryService.getAll());
+        return "product/category-search";
+    }
+
+    @GetMapping("/name-search")
+    public String createNameSearchForm(@RequestParam(value = "name", required = false, defaultValue = "null") String name,
+                                       Model model) {
+        if (name.equals("null"))
+            return "product/name-search";
+        model.addAttribute("products", productService.getAllByName(name));
+        addDefaultAttributes(model);
+        return "product/list";
+    }
+
 
     // Create a new product
     @GetMapping("/new")
@@ -98,7 +113,7 @@ public class ProductController {
 
     private void addDefaultAttributes(Model model) {
         model.addAttribute("categories",
-                categoryService.getAll(CategoryServiceImpl.DEFAULT_SORT).stream()
+                categoryService.getAll().stream()
                         .collect(Collectors.toMap(CategoryDto::getId, Function.identity())));
     }
 }

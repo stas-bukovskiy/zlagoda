@@ -1,13 +1,14 @@
 package com.zlagoda.employee;
 
+import com.zlagoda.employee.authentication.EmployeePrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import static com.zlagoda.employee.EmployeeServiceImpl.DEFAULT_SORT;
 
 @Controller
 @RequestMapping("/employee")
@@ -20,9 +21,35 @@ public class EmployeeController {
     // List all employees
     @GetMapping
     public String listEmployees(Model model) {
-        model.addAttribute("employees", employeeService.getAll(DEFAULT_SORT));
+        model.addAttribute("employees", employeeService.getAll());
         return "employee/list";
     }
+
+    @GetMapping("/me")
+    public String viewCurrentEmployee() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        EmployeePrincipal employeePrincipal = (EmployeePrincipal) authentication.getPrincipal();
+
+        return "redirect:/employee/view/" + employeePrincipal.getEmployee().getId();
+    }
+
+    @GetMapping("/cashiers")
+    public String listCashiers(Model model) {
+        model.addAttribute("employees", employeeService.getAllCashiers());
+        return "employee/list";
+    }
+
+    @GetMapping("/surname-search")
+    public String createSearchForm(@RequestParam(value = "surname", required = false, defaultValue = "null") String surname,
+                                   Model model) {
+        if (surname.equals("null"))
+            return "employee/surname-search";
+        else {
+            model.addAttribute("employees", employeeService.getPhoneNumbersAndAddressesBySurname(surname));
+            return "employee/surname-search-list";
+        }
+    }
+
 
     // Create a new employee
     @GetMapping("/new")
@@ -51,12 +78,19 @@ public class EmployeeController {
         return "redirect:/employee";
     }
 
+    @GetMapping("/view/{id}")
+    public String viewEmployeeForm(@PathVariable String id, Model model) {
+        EmployeeDto employeeDto = employeeService.getById(id);
+        model.addAttribute("employee", employeeDto);
+        addDefaultAttributes(model);
+        return "employee/view";
+    }
+
     // Update an existing employee
     @GetMapping("/edit/{id}")
     public String editEmployeeForm(@PathVariable String id, Model model) {
         EmployeeDto employeeDto = employeeService.getById(id);
         model.addAttribute("employee", employeeDto);
-        addDefaultAttributes(model);
         return "employee/edit";
     }
 

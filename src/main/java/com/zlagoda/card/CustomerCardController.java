@@ -7,8 +7,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import static com.zlagoda.card.CustomerCardServiceImpl.DEFAULT_SORT;
-
 
 @Controller
 @RequestMapping("/customer/card")
@@ -21,9 +19,29 @@ public class CustomerCardController {
     // List all customer cards
     @GetMapping
     public String listCustomerCards(Model model) {
-        model.addAttribute("cards", service.getAll(DEFAULT_SORT));
+        model.addAttribute("cards", service.getAll());
         return "card/list";
     }
+
+    @GetMapping("/percent-search")
+    public String listCustomerCards(@RequestParam(value = "percent", required = false, defaultValue = "-1") int percent,
+                                    Model model) {
+        if (percent == -1)
+            return "card/percent-search";
+        model.addAttribute("cards", service.getAllByPercent(percent));
+        return "card/list";
+    }
+
+
+    @GetMapping("/surname-search")
+    public String listCustomerCards(@RequestParam(value = "surname", required = false, defaultValue = "") String surname,
+                                    Model model) {
+        if (surname.equals(""))
+            return "card/surname-search";
+        model.addAttribute("cards", service.getAllBySurname(surname));
+        return "card/list";
+    }
+
 
     // Create a new customer card
     @GetMapping("/new")

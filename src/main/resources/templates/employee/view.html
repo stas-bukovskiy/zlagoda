@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>View Employee</title>
+
+    <div th:replace="~{fragments/header::header-css}"></div>
+    <div th:replace="~{fragments/show-password::show-password-css}"></div>
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header::header}"></div>
+
+<div class="container-sm flex-grow-1">
+
+    <div class="card mt-5">
+        <div class="card-header">
+            <h3 class="card-title">Employee Information</h3>
+        </div>
+        <div class="card-body">
+            <h5>ID: <span th:text="${employee.id}"></span></h5>
+            <p class="card-text">
+                <strong>Username:</strong> <span th:text="${employee.username}"></span><br>
+                <strong>Name:</strong> <span th:text="${employee.surname}"></span> <span
+                    th:text="${employee.name}"></span> <span th:text="${employee.patronymic}"></span><br>
+                <strong>Role:</strong> <span th:text="${employee.role}"></span><br>
+                <strong>Salary:</strong> <span th:text="${employee.salary}"></span><br>
+                <strong>Date of Birth:</strong> <span th:text="${employee.dateOfBirth}"></span><br>
+                <strong>Date of Start:</strong> <span th:text="${employee.dateOfStart}"></span><br>
+                <strong>Phone Number:</strong> <span th:text="${employee.phoneNumber}"></span><br>
+                <strong>Address:</strong> <span th:text="${employee.city}"></span>, <span
+                    th:text="${employee.street}"></span>, <span th:text="${employee.zipCode}"></span>
+            </p>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer::footer}"></div>
+<div th:replace="~{fragments/show-password::show-password-function}"></div>
+
+</body>
+</html>

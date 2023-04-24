@@ -1,14 +1,11 @@
 package com.zlagoda.card;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-
-import static com.zlagoda.utils.SortUtils.sortToString;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,13 +16,13 @@ public class CustomerCardRepositoryImpl implements CustomerCardRepository {
     private final CustomerCardIdGenerator idGenerator;
 
     @Override
-    public List<CustomerCard> findAll(Sort sort) {
+    public List<CustomerCard> findAll() {
         String sql = """
                 SELECT *
                 FROM customer_card
-                ORDER BY ?
+                ORDER BY cust_surname;
                 """;
-        return jdbcTemplate.query(sql, rowMapper, sortToString(sort));
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
@@ -100,6 +97,17 @@ public class CustomerCardRepositoryImpl implements CustomerCardRepository {
     }
 
     @Override
+    public List<CustomerCard> findALlByPercent(int percent) {
+        String sql = """
+                SELECT *
+                FROM customer_card
+                WHERE percent = ?
+                ORDER BY cust_surname;
+                """;
+        return jdbcTemplate.query(sql, rowMapper, percent);
+    }
+
+    @Override
     public List<String> findAllDistinctCities() {
         String sql = """
                 SELECT DISTINCT city
@@ -137,5 +145,15 @@ public class CustomerCardRepositoryImpl implements CustomerCardRepository {
         if (count != null)
             return count > 0;
         return false;
+    }
+
+    @Override
+    public List<CustomerCard> findAllBySurname(String surname) {
+        String sql = """
+                SELECT *
+                FROM customer_card
+                WHERE LOWER(cust_surname) LIKE '%' || LOWER(?) || '%';
+                """;
+        return jdbcTemplate.query(sql, rowMapper, surname);
     }
 }

@@ -1,15 +1,12 @@
 package com.zlagoda.sale;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.util.Pair;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-
-import static com.zlagoda.utils.SortUtils.sortToString;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,13 +16,12 @@ public class SaleRepositoryImpl implements SaleRepository {
     private final SaleRowMapper rowMapper;
 
     @Override
-    public List<Sale> findAll(Sort sort) {
+    public List<Sale> findAll() {
         String sql = """
                 SELECT *
-                FROM sale
-                ORDER BY ?;
+                FROM sale;
                 """;
-        return jdbcTemplate.query(sql, rowMapper, sortToString(sort));
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override

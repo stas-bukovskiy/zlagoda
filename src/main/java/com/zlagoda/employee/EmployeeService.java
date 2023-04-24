@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface EmployeeService extends Service<String, EmployeeDto> {
 
-    List<Employee> getAllCashiers();
+    List<EmployeeDto> getPhoneNumbersAndAddressesBySurname(String surname);
+
+    List<EmployeeDto> getAllCashiers();
 
     List<EmployeeRole> getRoles();
 

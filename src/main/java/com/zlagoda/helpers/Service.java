@@ -1,11 +1,9 @@
 package com.zlagoda.helpers;
 
-import org.springframework.data.domain.Sort;
-
 import java.util.List;
 
 public interface Service<ID, D extends DTO> {
-    List<D> getAll(Sort sort);
+    List<D> getAll();
 
     D getById(ID id);
 

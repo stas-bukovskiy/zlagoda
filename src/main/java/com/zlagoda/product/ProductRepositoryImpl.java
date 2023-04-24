@@ -1,7 +1,6 @@
 package com.zlagoda.product;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -12,8 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.zlagoda.utils.SortUtils.sortToString;
-
 @Repository
 @RequiredArgsConstructor
 public class ProductRepositoryImpl implements ProductRepository {
@@ -22,13 +19,13 @@ public class ProductRepositoryImpl implements ProductRepository {
     private final ProductRowMapper rowMapper;
 
     @Override
-    public List<Product> findAll(Sort sort) {
+    public List<Product> findAll() {
         String sql = """
                 SELECT *
                 FROM product
-                ORDER BY ?
+                ORDER BY product_name;
                 """;
-        return jdbcTemplate.query(sql, rowMapper, sortToString(sort));
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
     @Override
@@ -133,8 +130,19 @@ public class ProductRepositoryImpl implements ProductRepository {
                 SELECT *
                 FROM product
                 WHERE category_number = ?
+                ORDER BY product_name;
                 """;
         return jdbcTemplate.query(sql, rowMapper, categoryId);
+    }
+
+    @Override
+    public List<Product> findAllByName(String name) {
+        String sql = """
+                SELECT *
+                FROM product
+                WHERE LOWER(product_name) LIKE '%' || LOWER(?) || '%';
+                """;
+        return jdbcTemplate.query(sql, rowMapper, name);
     }
 
     @Override
@@ -144,7 +152,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 FROM product
                 WHERE product_name = ? AND id_product != ?;
                 """;
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name);
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name, id);
         if (count == null)
             return false;
         return count > 0;

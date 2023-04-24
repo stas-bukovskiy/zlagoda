@@ -7,8 +7,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import static com.zlagoda.category.CategoryServiceImpl.DEFAULT_SORT;
-
 @Controller
 @RequestMapping("/category")
 @RequiredArgsConstructor
@@ -20,7 +18,7 @@ public class CategoryController {
     // List all categories
     @GetMapping
     public String listCategories(Model model) {
-        model.addAttribute("categories", categoryService.getAll(DEFAULT_SORT));
+        model.addAttribute("categories", categoryService.getAll());
         return "category/list";
     }
 

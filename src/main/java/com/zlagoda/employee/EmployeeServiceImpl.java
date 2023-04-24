@@ -3,7 +3,6 @@ package com.zlagoda.employee;
 import com.zlagoda.check.CheckService;
 import com.zlagoda.confiramtion.DeleteConfirmation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,15 +15,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
-    public final static Sort DEFAULT_SORT = Sort.by("empl_name");
-
     private final EmployeeRepository repository;
     private final EmployeeConverter converter;
     private final CheckService checkService;
 
     @Override
-    public List<EmployeeDto> getAll(Sort sort) {
-        return repository.findAll(sort)
+    public List<EmployeeDto> getAll() {
+        return repository.findAll()
                 .stream()
                 .map(converter::convertToDto)
                 .toList();
@@ -65,8 +62,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<Employee> getAllCashiers() {
-        return repository.findAllByRole(EmployeeRole.CASHIER);
+    public List<EmployeeDto> getPhoneNumbersAndAddressesBySurname(String surname) {
+        return repository.findPhoneNumbersAndAddressesBySurname(surname).stream()
+                .map(converter::convertToDto)
+                .toList();
+    }
+
+    @Override
+    public List<EmployeeDto> getAllCashiers() {
+        return repository.findAllByRole(EmployeeRole.CASHIER).stream()
+                .map(converter::convertToDto)
+                .toList();
     }
 
     @Override

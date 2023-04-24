@@ -12,4 +12,6 @@ public interface ProductRepository extends Repository<Product, Long> {
     boolean existsById(Long id);
 
     List<Product> findAllByCategoryId(Long categoryId);
+
+    List<Product> findAllByName(String name);
 }

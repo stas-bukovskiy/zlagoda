@@ -3,7 +3,6 @@ package com.zlagoda.card;
 import com.zlagoda.check.CheckDeleteByCardIdConfirmationService;
 import com.zlagoda.confiramtion.DeleteConfirmation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,15 +14,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomerCardServiceImpl implements CustomerCardService {
 
-    public final static Sort DEFAULT_SORT = Sort.by("cust_name");
-
     private final CustomerCardRepository repository;
     private final CustomerCardConverter converter;
     private final CheckDeleteByCardIdConfirmationService checkDeleteConfirmationService;
 
     @Override
-    public List<CustomerCardDto> getAll(Sort sort) {
-        return repository.findAll(sort)
+    public List<CustomerCardDto> getAll() {
+        return repository.findAll()
                 .stream()
                 .map(converter::convertToDto)
                 .toList();
@@ -62,6 +59,13 @@ public class CustomerCardServiceImpl implements CustomerCardService {
     }
 
     @Override
+    public List<CustomerCardDto> getAllByPercent(int percent) {
+        return repository.findALlByPercent(percent).stream()
+                .map(converter::convertToDto)
+                .toList();
+    }
+
+    @Override
     public List<String> getCities() {
         return repository.findAllDistinctCities();
     }
@@ -83,5 +87,12 @@ public class CustomerCardServiceImpl implements CustomerCardService {
         confirmation.setObjectName("Customer card");
         confirmation.setChildRemovals(checkDeleteConfirmationService.createChildDeleteConfirmation(id));
         return confirmation;
+    }
+
+    @Override
+    public List<CustomerCardDto> getAllBySurname(String surname) {
+        return repository.findAllBySurname(surname).stream()
+                .map(converter::convertToDto)
+                .toList();
     }
 }

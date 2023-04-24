@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Products</title>
+
+    <div th:replace="~{fragments/header::header-css}"></div>
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header::header}"></div>
+
+<div class="container-sm flex-grow-1">
+    <div class="card text-center mt-5">
+        <div class="card-header">
+            <h1>Search Products by Category</h1>
+        </div>
+        <div class="card-body">
+
+            <form method="get" th:action="@{/product}">
+                <div class="form-group">
+                    <label for="category_id">Category: </label>
+                    <select class="form-select my-3" id="category_id" name="category_id">
+                        <option selected th:each="category : ${categories}" th:text="${category.name}"
+                                th:value="${category.id}"></option>
+                    </select>
+                    <div class="d-flex justify-content-center py-3">
+                        <button class="btn btn-success btn-lg me-5" type="submit">Search</button>
+                        <a class="btn btn-secondary btn-lg" th:href="@{/product}">Cancel</a>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer::footer}"></div>
+
+</body>
+</html>

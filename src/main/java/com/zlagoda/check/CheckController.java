@@ -2,12 +2,11 @@ package com.zlagoda.check;
 
 import com.zlagoda.card.CustomerCardDto;
 import com.zlagoda.card.CustomerCardService;
-import com.zlagoda.card.CustomerCardServiceImpl;
-import com.zlagoda.employee.Employee;
+import com.zlagoda.employee.EmployeeDto;
 import com.zlagoda.employee.EmployeeService;
+import com.zlagoda.product.ProductService;
 import com.zlagoda.store.product.StoreProductDto;
 import com.zlagoda.store.product.StoreProductService;
-import com.zlagoda.store.product.StoreProductServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -20,7 +19,7 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.zlagoda.check.CheckServiceImpl.DEFAULT_SORT;
+import static com.zlagoda.utils.DateConverter.convertToTimestamp;
 
 
 @Controller
@@ -29,6 +28,7 @@ import static com.zlagoda.check.CheckServiceImpl.DEFAULT_SORT;
 public class CheckController {
 
     private final CheckService checkService;
+    private final ProductService productService;
     private final CustomerCardService customerCardService;
     private final StoreProductService storeProductService;
     private final EmployeeService employeeService;
@@ -38,12 +38,111 @@ public class CheckController {
     // List all checks
     @GetMapping
     public String listChecks(Model model) {
-        model.addAttribute("checks", checkService.getAll(DEFAULT_SORT));
+        model.addAttribute("checks", checkService.getAll());
         model.addAttribute("cashiers", employeeService.getAllCashiers().stream()
-                .collect(Collectors.toMap(Employee::getId, Function.identity())));
+                .collect(Collectors.toMap(EmployeeDto::getId, Function.identity())));
         addDefaultAttributes(model);
         return "check/list";
     }
+
+
+    @GetMapping("/number-search")
+    public String createSearchForm(@RequestParam(value = "number", required = false, defaultValue = "null") String number,
+                                   Model model) {
+        if (number.equals("null"))
+            return "check/number-search";
+        else {
+            return "redirect:/check/view/" + number;
+        }
+    }
+
+    @GetMapping("/period-search")
+    private String getPeriodForm(Model model) {
+        model.addAttribute("period", new CountData<String>());
+        return "check/period-search";
+    }
+
+    @PostMapping("/period-search")
+    private String listCheckForPeriodOfTime(@ModelAttribute @Valid CountData<String> period,
+                                            Model model, BindingResult bindingResult) {
+        model.addAttribute("period", period);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            return "check/period-search";
+        }
+
+        model.addAttribute("checks", checkService.getAllByPrintDateBetween(
+                convertToTimestamp(period.getFrom()),
+                convertToTimestamp(period.getTo())
+        ));
+        model.addAttribute("cashiers", employeeService.getAllCashiers().stream()
+                .collect(Collectors.toMap(EmployeeDto::getId, Function.identity())));
+        addDefaultAttributes(model);
+        return "check/list";
+    }
+
+    @GetMapping("/period-search/today")
+    public String listTodayChecksOfCurrentCashier(Model model) {
+        model.addAttribute("checks", checkService.getTodayChecksOfCurrentUser());
+        model.addAttribute("cashiers", employeeService.getAllCashiers().stream()
+                .collect(Collectors.toMap(EmployeeDto::getId, Function.identity())));
+        addDefaultAttributes(model);
+        return "check/list";
+    }
+
+    @GetMapping("/count/sum")
+    public String countSumForm(Model model) {
+        model.addAttribute("employees", employeeService.getAllCashiers());
+        model.addAttribute("countData", new CountData<String>());
+        return "check/count-sum";
+    }
+
+    @PostMapping("/count/sum")
+    public String countSum(@ModelAttribute @Valid CountData<String> countData,
+                           Model model, BindingResult bindingResult) {
+
+        model.addAttribute("employees", employeeService.getAllCashiers());
+        model.addAttribute("countData", countData);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            return "check/count-sum";
+        }
+
+        model.addAttribute("sum", !countData.getId().equals("") ?
+                checkService.countTotalSumByEmployeeId(countData.getId(), convertToTimestamp(countData.getFrom()), convertToTimestamp(countData.getTo())) :
+                checkService.countTotalSum(convertToTimestamp(countData.getFrom()), convertToTimestamp(countData.getTo())));
+        return "check/count-sum";
+    }
+
+    @GetMapping("/count/amount")
+    public String countAmountForm(Model model) {
+        model.addAttribute("products", productService.getAll());
+        model.addAttribute("countData", new CountData<Long>());
+        return "check/count-sum";
+    }
+
+    @PostMapping("/count/amount")
+    public String countAmount(@ModelAttribute @Valid CountData<Long> countData,
+                              Model model, BindingResult bindingResult) {
+
+        model.addAttribute("products", productService.getAll());
+        model.addAttribute("countData", countData);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult.getAllErrors());
+            return "check/count-amount";
+        }
+
+        model.addAttribute("amount", checkService.countTotalAmountSoldByProductId(
+                countData.getId(),
+                convertToTimestamp(countData.getFrom()),
+                convertToTimestamp(countData.getTo())
+        ));
+        return "check/count-amount";
+    }
+
 
     // Create a new check
     @GetMapping("/new")
@@ -89,10 +188,10 @@ public class CheckController {
 
     private void addDefaultAttributes(Model model) {
         model.addAttribute("customerCards",
-                customerCardService.getAll(CustomerCardServiceImpl.DEFAULT_SORT).stream()
+                customerCardService.getAll().stream()
                         .collect(Collectors.toMap(CustomerCardDto::getCardNumber, Function.identity())));
         model.addAttribute("storeProducts",
-                storeProductService.getAll(StoreProductServiceImpl.DEFAULT_SORT).stream()
+                storeProductService.getAll().stream()
                         .collect(Collectors.toMap(StoreProductDto::getUpc, Function.identity())));
         model.addAttribute("vatCoefficient", checkProperties.getVat());
         model.addAttribute("formatter", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));

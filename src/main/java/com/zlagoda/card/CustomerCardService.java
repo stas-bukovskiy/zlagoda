@@ -6,6 +6,9 @@ import com.zlagoda.helpers.Service;
 import java.util.List;
 
 public interface CustomerCardService extends Service<String, CustomerCardDto> {
+
+    List<CustomerCardDto> getAllByPercent(int percent);
+
     List<String> getCities();
 
     List<String> getStreets();
@@ -13,4 +16,6 @@ public interface CustomerCardService extends Service<String, CustomerCardDto> {
     List<String> getZipCodes();
 
     DeleteConfirmation createDeleteConfirmation(String id);
+
+    List<CustomerCardDto> getAllBySurname(String surname);
 }

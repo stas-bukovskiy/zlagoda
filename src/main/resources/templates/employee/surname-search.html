@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Address</title>
+
+    <div th:replace="~{fragments/header::header-css}"></div>
+
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{fragments/header::header}"></div>
+
+<div class="container-sm flex-grow-1">
+    <div class="card text-center mt-5">
+        <div class="card-header">
+            <h1>Search Phone Numbers and Addresses by Surname</h1>
+        </div>
+        <div class="card-body">
+
+            <form method="get" th:action="@{/employee/surname-search}">
+                <div class="form-group">
+                    <label for="surname"></label>
+                    <input class="form-control my-3" id="surname" name="surname" placeholder="Surname" required
+                           type="text">
+                    <div class="d-flex justify-content-center py-3">
+                        <button class="btn btn-success btn-lg me-5" type="submit">Search</button>
+                        <a class="btn btn-secondary btn-lg" th:href="@{/employee}">Cancel</a>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer::footer}"></div>
+
+</body>
+</html>

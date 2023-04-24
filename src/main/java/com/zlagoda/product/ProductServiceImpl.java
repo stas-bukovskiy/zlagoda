@@ -3,7 +3,6 @@ package com.zlagoda.product;
 import com.zlagoda.confiramtion.DeleteConfirmation;
 import com.zlagoda.store.product.StoreProductDeleteConfirmationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,15 +14,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-    public final static Sort DEFAULT_SORT = Sort.by("product_name");
-
     private final ProductRepository repository;
     private final ProductConverter converter;
     private final StoreProductDeleteConfirmationService storeProductDeleteConfirmationService;
 
     @Override
-    public List<ProductDto> getAll(Sort sort) {
-        return repository.findAll(sort)
+    public List<ProductDto> getAll() {
+        return repository.findAll()
                 .stream()
                 .map(converter::convertToDto)
                 .toList();
@@ -62,6 +59,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductDto> getALlByCategoryId(Long categoryId) {
+        return repository.findAllByCategoryId(categoryId).stream()
+                .map(converter::convertToDto)
+                .toList();
+    }
+
+    @Override
     public boolean isNameUniqueToCreate(String name) {
         return !repository.existsByName(name);
     }
@@ -78,5 +82,12 @@ public class ProductServiceImpl implements ProductService {
         confirmation.setObjectName("Product");
         confirmation.setChildRemovals(storeProductDeleteConfirmationService.createChildDeleteConfirmation(id));
         return confirmation;
+    }
+
+    @Override
+    public List<ProductDto> getAllByName(String name) {
+        return repository.findAllByName(name).stream()
+                .map(converter::convertToDto)
+                .toList();
     }
 }

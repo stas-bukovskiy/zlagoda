@@ -22,8 +22,8 @@ public class CategoryServiceImpl implements CategoryService {
     private final ProductDeleteConfirmationService productDeleteConfirmationService;
 
     @Override
-    public List<CategoryDto> getAll(Sort sort) {
-        return repository.findAll(sort)
+    public List<CategoryDto> getAll() {
+        return repository.findAll()
                 .stream()
                 .map(converter::convertToDto)
                 .toList();

@@ -1,4 +1,5 @@
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <div th:fragment="header-css">
         <!-- this is header-css -->
@@ -26,29 +27,121 @@
                     <li class="nav-item">
                         <a aria-current="page" class="nav-link" th:href="@{/}">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/employee}">Employees</a>
+
+                    <li class="nav-item dropdown">
+                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+                           id="employeesDropDown" role="button">
+                            Employees
+                        </a>
+                        <ul aria-labelledby="employeesDropDown" class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/employee}">All</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li sec:authorize="hasAnyAuthority('MANAGER')"><a class="dropdown-item"
+                                                                              th:href="@{/employee/cashiers}">Cashiers</a>
+                            </li>
+                            <li sec:authorize="hasAnyAuthority('MANAGER')"><a class="dropdown-item"
+                                                                              th:href="@{/employee/surname-search}">Find
+                                by surname</a></li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/customer/card}">Customer cards</a>
+
+                    <li class="nav-item dropdown">
+                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+                           id="customerCardsDropDown" role="button">
+                            Customer cards
+                        </a>
+                        <ul aria-labelledby="customerCardsDropDown" class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/customer/card}">All</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li sec:authorize="hasAnyAuthority('MANAGER')"><a class="dropdown-item"
+                                                                              th:href="@{/customer/card/percent-search}">Find
+                                by percent of discount</a></li>
+                            <li sec:authorize="hasAnyAuthority('CASHIER')"><a class="dropdown-item"
+                                                                              th:href="@{/customer/card/surname-search}">Find
+                                by surname</a></li>
+                        </ul>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/category}">Categories</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/product}">Products</a>
+
+                    <li class="nav-item dropdown">
+                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+                           id="productsDropDown" role="button">
+                            Products
+                        </a>
+                        <ul aria-labelledby="productsDropDown" class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/product}">All</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" th:href="@{/product/category-search}">Find by category</a></li>
+                            <li sec:authorize="hasAnyAuthority('CASHIER')"><a class="dropdown-item"
+                                                                              th:href="@{/product/name-search}">Find by
+                                name</a></li>
+                            <!--                            todo make it for manager-->
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/store/product}">Store products</a>
+
+                    <li class="nav-item dropdown">
+                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+                           id="storeProductsDropDown" role="button">
+                            Store products
+                        </a>
+                        <ul aria-labelledby="storeProductsDropDown" class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/store/product}">All</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" th:href="@{/store/product/upc-search}">Find by UPC</a></li>
+                            <li><a class="dropdown-item" th:href="@{/store/product/promotional}">Promotional sorted by
+                                name</a></li>
+                            <li><a class="dropdown-item" th:href="@{/store/product/promotional?sort=products_number}">Promotional
+                                sorted by amount</a></li>
+                            <li><a class="dropdown-item" th:href="@{/store/product/not-promotional}">Not Promotional
+                                sorted by name</a></li>
+                            <li><a class="dropdown-item"
+                                   th:href="@{/store/product/not-promotional?sort=products_number}">Not Promotional
+                                sorted by amount</a></li>
+                            <!--                            todo make it for manager-->
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/check}">Checks</a>
+
+                    <li class="nav-item dropdown">
+                        <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+                           id="checksDropDown" role="button">
+                            Checks
+                        </a>
+                        <ul aria-labelledby="checksDropDown" class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/check}">All</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li sec:authorize="hasAnyAuthority('MANAGER')"><a class="dropdown-item"
+                                                                              th:href="@{/check/count/sum}">Count total
+                                sum</a></li>
+                            <li sec:authorize="hasAnyAuthority('MANAGER')"><a class="dropdown-item"
+                                                                              th:href="@{/check/count/amount}">Count
+                                sold amount</a></li>
+                            <li sec:authorize="hasAnyAuthority('CASHIER')"><a class="dropdown-item"
+                                                                              th:href="@{/check/period-search/today}">Search
+                                by today</a></li>
+                            <li sec:authorize="hasAnyAuthority('CASHIER')"><a class="dropdown-item"
+                                                                              th:href="@{/check/period-search}">Search
+                                by period</a></li>
+                            <li sec:authorize="hasAnyAuthority('CASHIER')"><a class="dropdown-item"
+                                                                              th:href="@{/check/number-search}">Search
+                                by check number</a></li>
+
+                            <!--                            todo make it for manager-->
+                        </ul>
                     </li>
                 </ul>
-                <form class="d-flex">
-                    <input aria-label="Search" class="form-control me-2" placeholder="Search" type="search">
-                    <button class="btn btn-outline-light" type="submit">Search</button>
-                </form>
             </div>
         </div>
     </nav>

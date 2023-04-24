@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Store Product s</title>
+    <title>Store Products</title>
 
     <div th:replace="~{fragments/header::header-css}"></div>
 
@@ -14,9 +15,12 @@
 <div class="flex-grow-1 container-fluid">
     <div class="d-flex justify-content-between align-items-center mx-5 my-2">
         <h1>Store products</h1>
-        <a class="btn btn-primary mb-3" th:href="@{/store/product/new}">Add new</a>
+        <div class="d-flex col-3 justify-content-around" sec:authorize="hasAnyAuthority('MANAGER')">
+            <button class="btn btn-outline-primary" onclick="printReport()">Print Report</button>
+            <a class="btn btn-primary" th:href="@{/store/product/new}">Add new</a>
+        </div>
     </div>
-    <table class="table table-striped">
+    <table class="table table-striped" id="report-table">
         <thead>
         <tr>
             <th>UPC</th>
@@ -24,9 +28,9 @@
             <th>Product Number</th>
             <th class="col-1">Is Promotional</th>
             <th>Product</th>
-            <th></th>
-            <th></th>
-            <th></th>
+            <th class="col-1" sec:authorize="hasAnyAuthority('MANAGER')"></th>
+            <th class="col-1" sec:authorize="hasAnyAuthority('MANAGER')"></th>
+            <th class="col-1" sec:authorize="hasAnyAuthority('MANAGER')"></th>
         </tr>
         </thead>
         <tbody>
@@ -41,7 +45,7 @@
             </td>
             <th><a th:href="@{/product/edit/{id}(id=${storeProduct.product.id})}"
                    th:text="${products.get(storeProduct.product.id).name}"></a></th>
-            <td>
+            <td class="not-printable" sec:authorize="hasAnyAuthority('MANAGER')">
                 <a class="btn btn-success disabled"
                    disabled
                    href="#" th:if="${storeProduct.promotional}">Make prom</a>
@@ -52,10 +56,10 @@
                    th:href="@{/store/product/unmake/prom/{upc}(upc=${storeProduct.upc})}"
                    th:if="${storeProduct.promStoreProduct != null && !storeProduct.promotional}">Unmake prom</a>
             </td>
-            <td>
+            <td class="not-printable" sec:authorize="hasAnyAuthority('MANAGER')">
                 <a class="btn btn-warning" th:href="@{/store/product/edit/{upc}(upc=${storeProduct.upc})}">Edit</a>
             </td>
-            <td>
+            <td class="not-printable" sec:authorize="hasAnyAuthority('MANAGER')">
                 <a class="btn btn-danger" th:href="@{/store/product/delete/{upc}(upc=${storeProduct.upc})}">Delete</a>
             </td>
         </tr>
@@ -63,6 +67,10 @@
     </table>
 </div>
 
+
+<script type="text/javascript">
+    const REPORT_TITLE = "Store products report"
+</script>
 
 <div th:replace="~{fragments/footer::footer}"></div>
 

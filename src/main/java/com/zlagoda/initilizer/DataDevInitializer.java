@@ -3,7 +3,6 @@ package com.zlagoda.initilizer;
 import com.zlagoda.employee.Employee;
 import com.zlagoda.employee.EmployeeRepository;
 import com.zlagoda.employee.EmployeeRole;
-import com.zlagoda.employee.EmployeeServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -35,7 +34,7 @@ public class DataDevInitializer {
 
     @EventListener(value = ApplicationReadyEvent.class)
     public void initEmployees() {
-        if (!repository.findAll(EmployeeServiceImpl.DEFAULT_SORT).isEmpty())
+        if (!repository.findAll().isEmpty())
             return;
         log.debug("[DATA_INITIALIZER] start employee data initialization...");
         Stream.of(
