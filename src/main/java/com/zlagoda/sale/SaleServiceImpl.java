@@ -1,9 +1,8 @@
 package com.zlagoda.sale;
 
-import com.zlagoda.check.CheckCreatingException;
+import com.zlagoda.exception.EntityCreationException;
 import com.zlagoda.store.product.StoreProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +11,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SaleServiceImpl implements SaleService {
-
-    public final static Sort DEFAULT_SORT = Sort.by("upc", "check_number");
 
     private final SaleRepository repository;
     private final SaleConverter converter;
@@ -41,8 +38,8 @@ public class SaleServiceImpl implements SaleService {
 
         int availableAmount = storeProductService.getAmountByUpc(saleDto.getStoreProductUpc());
         if (saleDto.getProductNumber() > availableAmount)
-            throw new CheckCreatingException();
-        // TODO: 22.04.2023 error message
+            throw new EntityCreationException("Not enough amount of store products with id = " +
+                                              saleDto.getStoreProductUpc() + " to create check");
 
         storeProductService.subtractAmountByUpc(saleDto.getStoreProductUpc(), saleDto.getProductNumber());
 

@@ -20,30 +20,28 @@
             <a class="btn btn-primary" th:href="@{/category/new}">Add new</a>
         </div>
     </div>
-    <div class="container mx-auto">
-        <table class="table table-striped" id="report-table">
-            <thead>
-            <tr>
-                <th class="col-1">#</th>
-                <th>Name</th>
-                <th class="col-1 not-printable" sec:authorize="hasAnyAuthority('MANAGER')"></th>
-                <th class="col-1 not-printable" sec:authorize="hasAnyAuthority('MANAGER')"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="category : ${categories}">
-                <td th:text="${category.id}"></td>
-                <td th:text="${category.name}"></td>
-                <td class="not-printable" sec:authorize="hasAnyAuthority('MANAGER')">
-                    <a class="btn btn-warning" th:href="@{/category/edit/{id}(id=${category.id})}">Edit</a>
-                </td>
-                <td class="not-printable" sec:authorize="hasAnyAuthority('MANAGER')">
-                    <a class="btn btn-danger" th:href="@{/category/delete/{id}(id=${category.id})}">Delete</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+    <table class="table  table-hover" id="report-table">
+        <thead>
+        <tr>
+            <th class="col-1">#</th>
+            <th>Name</th>
+            <th class="col-1 not-printable" sec:authorize="hasAnyAuthority('MANAGER')"></th>
+            <th class="col-1 not-printable" sec:authorize="hasAnyAuthority('MANAGER')"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="category : ${categories}" th:id="${'row-' + category.id}">
+            <td th:text="${category.id}"></td>
+            <td th:text="${category.name}"></td>
+            <td class="not-printable" sec:authorize="hasAnyAuthority('MANAGER')">
+                <a class="btn btn-warning" th:href="@{/category/edit/{id}(id=${category.id})}">Edit</a>
+            </td>
+            <td class="not-printable" sec:authorize="hasAnyAuthority('MANAGER')">
+                <a class="btn btn-danger" th:href="@{/category/delete/{id}(id=${category.id})}">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 
 

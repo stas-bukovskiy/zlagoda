@@ -18,7 +18,7 @@ function createReportTable() {
     const newTable = document.createElement('table');
     newTable.className = table.className; // copy the classes from the original table
 
-    newTable.classList.add('table', 'table-striped', 'table-hover');
+    newTable.classList.add('table', 'table-hover');
 
     const originalHeader = table.querySelector('thead');
     if (originalHeader) {
@@ -69,3 +69,14 @@ function combineElements(el1, el2) {
     div.appendChild(el2);
     return div;
 }
+
+$(document).ready(function () {
+    var hash = window.location.hash;
+    if (hash) {
+        var target = $(hash);
+        target.addClass('table-info');
+        $('html, body').animate({
+            scrollTop: target.offset().top
+        }, 1000);
+    }
+});

@@ -22,7 +22,7 @@
             <a class="btn btn-primary" sec:authorize="hasAnyAuthority('CASHIER')" th:href="@{/check/new}">Add new</a>
         </div>
     </div>
-    <table class="table table-striped" id="report-table">
+    <table class="table  table-hover" id="report-table">
         <thead>
         <tr>
             <th>Check number</th>
@@ -38,9 +38,9 @@
         <tbody>
         <tr th:each="check : ${checks}">
             <td th:text="${check.checkNumber}"></td>
-            <td><a th:href="@{/employee/edit/{id}(id=${check.employeeId})}"
+            <td><a th:href="@{/employee#row-} + ${check.employeeId}"
                    th:text="${cashiers.get(check.employeeId).username}"></a></td>
-            <td><a th:href="@{/customer/card/edit/{id}(id=${check.cardNumber})}"
+            <td><a th:href="@{/customer/card#row-} + ${check.cardNumber}"
                    th:text="${check.cardNumber}"></a></td>
             <td th:text="${check.printDate.format(formatter)}"></td>
             <td th:text="${check.totalSum}"></td>
@@ -57,147 +57,11 @@
 </div>
 
 
-<script th:inline="javascript" type="text/javascript">
+<script type="text/javascript">
     const REPORT_TITLE = "Checks report"
-    const vatCoefficient = 0.2;
-    const checks = [[${checks}]];
-    const storeProducts = [[${storeProducts}]];
-
-    function printCheckReport() {
-        const title = createTitle();
-        const table = createCheckReportTable();
-        $(combineElements(title, table)).printThis();
-
-    }
-
-    function createCheckReportTable() {
-        const table = document.getElementById('report-table');
-
-        const newTable = document.createElement('table');
-        newTable.className = table.className; // copy the classes from the original table
-
-        newTable.classList.add('table', 'table-striped', 'table-hover');
-
-        const originalHeader = table.querySelector('thead');
-        if (originalHeader) {
-            const newHeader = document.createElement('thead');
-            const headerRow = document.createElement('tr');
-
-            for (let i = 0; i < originalHeader.rows[0].cells.length; i++) {
-                const cell = originalHeader.rows[0].cells[i];
-
-                const newCell = document.createElement('th');
-                newCell.innerText = cell.innerText;
-                headerRow.appendChild(newCell);
-            }
-
-            newHeader.appendChild(headerRow);
-            newTable.appendChild(newHeader);
-        }
-
-        const originalBody = table.querySelector('tbody');
-        if (originalBody) {
-            const newBody = document.createElement('tbody');
-
-            for (let i = 0; i < originalBody.rows.length; i++) {
-                const newRow = document.createElement('tr');
-
-                for (let j = 0; j < originalBody.rows[i].cells.length; j++) {
-                    const cell = originalBody.rows[i].cells[j];
-
-                    if (!cell.classList.contains('not-printable')) {
-                        const newCell = document.createElement('td');
-                        newCell.innerText = cell.innerText;
-                        newRow.appendChild(newCell);
-                    }
-                }
-
-                newBody.appendChild(newRow);
-
-                const newSalesRow = document.createElement('tr');
-                const saleTable = createSalesTable(checks[i], storeProducts);
-                const newSellsCell = document.createElement('td');
-                newSellsCell.setAttribute("colspan", 4);
-                newSalesRow.appendChild(saleTable);
-                newSalesRow.appendChild(newSellsCell);
-                newBody.appendChild(newSalesRow);
-            }
-
-            newTable.appendChild(newBody);
-        }
-
-        return newTable;
-    }
-
-    function createSalesTable(check, storeProducts) {
-        const sales = check.sales;
-
-
-        // Create the table element
-        const table = document.createElement('table');
-        table.classList.add('table');
-
-        // Create the table header
-        const thead = document.createElement('thead');
-        const headerRow = document.createElement('tr');
-        ['UPC', 'Product Name', 'Price for one', 'Amount', 'Sum', 'VAT'].forEach(headerText => {
-            const header = document.createElement('th');
-            header.textContent = headerText;
-            headerRow.appendChild(header);
-        });
-        thead.appendChild(headerRow);
-        table.appendChild(thead);
-
-        console.log(sales)
-
-        // Create the table body
-        const tbody = document.createElement('tbody');
-        tbody.setAttribute('id', 'salesTable');
-        sales.forEach(sale => {
-            const row = document.createElement('tr');
-
-            const upcCell = document.createElement('td');
-            const upcLink = document.createElement('p');
-            upcLink.textContent = sale.storeProductUpc;
-            upcCell.appendChild(upcLink);
-            row.appendChild(upcCell);
-
-            const productNameCell = document.createElement('td');
-            const productNameLink = document.createElement('p');
-            productNameLink.textContent = storeProducts[sale.storeProductUpc].product.name;
-            productNameCell.appendChild(productNameLink);
-            row.appendChild(productNameCell);
-
-            const priceCell = document.createElement('td');
-            priceCell.textContent = sale.sellingPrice.toFixed(4);
-            row.appendChild(priceCell);
-
-            const amountCell = document.createElement('td');
-            amountCell.textContent = sale.productNumber;
-            row.appendChild(amountCell);
-
-            const sumCell = document.createElement('td');
-            sumCell.textContent = (sale.sellingPrice * sale.productNumber).toFixed(4);
-            row.appendChild(sumCell);
-
-            const vatCell = document.createElement('td');
-            vatCell.textContent = (sale.sellingPrice * sale.productNumber * vatCoefficient).toFixed(4);
-            row.appendChild(vatCell);
-
-            tbody.appendChild(row);
-        });
-
-        table.appendChild(tbody);
-
-        const container = document.createElement("div");
-        container.classList.add("container-fluid");
-        container.appendChild(table);
-        return container;
-    }
-
-
 </script>
 
+<div th:replace="~{fragments/print-check-report::print-check-report}"></div>
 <div th:replace="~{fragments/footer::footer}"></div>
 
 </body>

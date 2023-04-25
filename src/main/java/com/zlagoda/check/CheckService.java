@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface CheckService extends Service<String, CheckDto> {
 
+    List<CheckDto> getAllByEmployeeId(String employeeId);
+
     BigDecimal countTotalSumByEmployeeId(String employeeId, Timestamp from, Timestamp to);
 
     BigDecimal countTotalSum(Timestamp from, Timestamp to);

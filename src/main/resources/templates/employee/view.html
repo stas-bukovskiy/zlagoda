@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>View Employee</title>
@@ -34,8 +35,55 @@
             </p>
         </div>
     </div>
+
+    <div th:if="${employee.role == 'CASHIER'}">
+        <div class="d-flex justify-content-between align-items-center mx-5 my-2">
+            <h2>Cashier Checks</h2>
+            <div class="d-flex col-3 justify-content-around">
+                <button class="btn btn-outline-primary" onclick="printCheckReport()"
+                        sec:authorize="hasAnyAuthority('MANAGER')">Print Report
+                </button>
+            </div>
+        </div>
+        <table class="table  table-hover" id="report-table">
+            <thead>
+            <tr>
+                <th>Check number</th>
+                <th>Customer card</th>
+                <th>Print date</th>
+                <th>Total sum</th>
+                <th>VAT</th>
+                <th class="not-printable"></th>
+                <th class="not-printable" sec:authorize="hasAnyAuthority('MANAGER')"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="check : ${checks}">
+                <td th:text="${check.checkNumber}"></td>
+                <td><a th:href="@{/customer/card#row-} + ${check.cardNumber}"
+                       th:text="${check.cardNumber}"></a></td>
+                <td th:text="${check.printDate.format(formatter)}"></td>
+                <td th:text="${check.totalSum}"></td>
+                <td th:text="${check.vat}"></td>
+                <td class="not-printable">
+                    <a class="btn btn-success" th:href="@{/check/view/{id}(id=${check.checkNumber})}">View</a>
+                </td>
+                <td class="not-printable" sec:authorize="hasAnyAuthority('MANAGER')">
+                    <a class="btn btn-danger" th:href="@{/check/delete/{id}(id=${check.checkNumber})}">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <script th:inline="javascript" type="text/javascript">
+        const REPORT_TITLE = "Check cashier report with id = " + [[${employee.id}]];
+    </script>
 </div>
 
+
+<div th:replace="~{fragments/print-check-report::print-check-report}"></div>
 <div th:replace="~{fragments/footer::footer}"></div>
 <div th:replace="~{fragments/show-password::show-password-function}"></div>
 

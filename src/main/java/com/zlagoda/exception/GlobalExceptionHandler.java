@@ -19,4 +19,14 @@ public class GlobalExceptionHandler {
         return modelAndView;
     }
 
+    @ExceptionHandler(value = EntityCreationException.class)
+    public ModelAndView handleNotFoundException(EntityCreationException e) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("exception", e);
+        modelAndView.setViewName("error/400");
+
+        log.debug("[EXCEPTION_HANDLER] handled {}", e.getClass().getName());
+        return modelAndView;
+    }
+
 }

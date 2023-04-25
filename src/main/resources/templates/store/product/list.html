@@ -20,7 +20,7 @@
             <a class="btn btn-primary" th:href="@{/store/product/new}">Add new</a>
         </div>
     </div>
-    <table class="table table-striped" id="report-table">
+    <table class="table  table-hover" id="report-table">
         <thead>
         <tr>
             <th>UPC</th>
@@ -28,13 +28,13 @@
             <th>Product Number</th>
             <th class="col-1">Is Promotional</th>
             <th>Product</th>
-            <th class="col-1" sec:authorize="hasAnyAuthority('MANAGER')"></th>
+            <th class="col-2" sec:authorize="hasAnyAuthority('MANAGER')"></th>
             <th class="col-1" sec:authorize="hasAnyAuthority('MANAGER')"></th>
             <th class="col-1" sec:authorize="hasAnyAuthority('MANAGER')"></th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="storeProduct : ${storeProducts}">
+        <tr th:each="storeProduct : ${storeProducts}" th:id="${'row-' + storeProduct.upc}">
             <td th:text="${storeProduct.upc}"></td>
             <td th:text="${storeProduct.sellingPrice}"></td>
             <td th:text="${storeProduct.productsNumber}"></td>
@@ -43,8 +43,8 @@
                       th:if="${storeProduct.promotional}"
                       th:text="${'Promotinal'}"></span>
             </td>
-            <th><a th:href="@{/product/edit/{id}(id=${storeProduct.product.id})}"
-                   th:text="${products.get(storeProduct.product.id).name}"></a></th>
+            <th><a th:href="@{/product#row-} + ${storeProduct.product.id}"
+                   th:text="${products.get(storeProduct.product.id).name}">></a>
             <td class="not-printable" sec:authorize="hasAnyAuthority('MANAGER')">
                 <a class="btn btn-success disabled"
                    disabled

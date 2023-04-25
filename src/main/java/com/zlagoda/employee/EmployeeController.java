@@ -1,5 +1,6 @@
 package com.zlagoda.employee;
 
+import com.zlagoda.check.CheckService;
 import com.zlagoda.employee.authentication.EmployeePrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,12 +11,15 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeFormatter;
+
 @Controller
 @RequestMapping("/employee")
 @RequiredArgsConstructor
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final CheckService checkService;
 
 
     // List all employees
@@ -82,7 +86,11 @@ public class EmployeeController {
     public String viewEmployeeForm(@PathVariable String id, Model model) {
         EmployeeDto employeeDto = employeeService.getById(id);
         model.addAttribute("employee", employeeDto);
-        addDefaultAttributes(model);
+
+        if (employeeDto.getRole().equals(EmployeeRole.CASHIER.name())) {
+            model.addAttribute("checks", checkService.getAllByEmployeeId(employeeDto.getId()));
+            model.addAttribute("formatter", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        }
         return "employee/view";
     }
 
@@ -91,6 +99,7 @@ public class EmployeeController {
     public String editEmployeeForm(@PathVariable String id, Model model) {
         EmployeeDto employeeDto = employeeService.getById(id);
         model.addAttribute("employee", employeeDto);
+        addDefaultAttributes(model);
         return "employee/edit";
     }
 

@@ -152,6 +152,13 @@ public class CheckServiceImpl implements CheckService {
     }
 
     @Override
+    public List<CheckDto> getAllByEmployeeId(String employeeId) {
+        return repository.findAllEmployeeId(employeeId).stream()
+                .map(converter::convertToDto)
+                .toList();
+    }
+
+    @Override
     public BigDecimal countTotalSumByEmployeeId(String employeeId, Timestamp from, Timestamp to) {
         return repository.countTotalSumByEmployeeId(employeeId, from, to);
     }

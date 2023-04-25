@@ -1,6 +1,7 @@
 package com.zlagoda.store.product;
 
 import com.zlagoda.confiramtion.DeleteConfirmation;
+import com.zlagoda.exception.EntityCreationException;
 import com.zlagoda.product.Product;
 import com.zlagoda.sale.SaleDeleteConfirmationService;
 import lombok.RequiredArgsConstructor;
@@ -119,13 +120,16 @@ public class StoreProductServiceImpl implements StoreProductService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED,
+            rollbackFor = EntityCreationException.class)
     public void makeStoreProductPromotional(String upc) {
         StoreProduct productToGetPromotional = repository.findById(upc)
                 .orElseThrow(StoreProductNotFoundException::new);
 
         if (productToGetPromotional.getPromStoreProduct() != null)
-            throw new RuntimeException("product already has promo");
-        // TODO: 22.04.2023 make exceptions class
+            throw new EntityCreationException("Store product with UPC = " + upc +
+                                              " already has promotional product with upc = " +
+                                              productToGetPromotional.getPromStoreProduct().getUpc());
 
         StoreProduct promStoreProduct = new StoreProduct(
                 randomUPC(),
@@ -141,13 +145,14 @@ public class StoreProductServiceImpl implements StoreProductService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED,
+            rollbackFor = EntityCreationException.class)
     public void unmakeStoreProductPromotional(String upc) {
         StoreProduct productToLosePromotional = repository.findById(upc)
                 .orElseThrow(StoreProductNotFoundException::new);
 
         if (productToLosePromotional.getPromStoreProduct() == null)
-            throw new RuntimeException("product does not have a promo");
-        // TODO: 22.04.2023 make exceptions class
+            throw new EntityCreationException("Store product with UPC = " + upc + " does not have promotional product");
 
 
         int productsNumber = productToLosePromotional.getPromStoreProduct().getProductsNumber();

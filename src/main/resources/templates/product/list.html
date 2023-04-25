@@ -20,34 +20,33 @@
             <a class="btn btn-primary" th:href="@{/product/new}">Add new</a>
         </div>
     </div>
-    <div class="container mx-auto">
-        <table class="table table-striped" id="report-table">
-            <thead>
-            <tr>
-                <th class="col-1">#</th>
-                <th>Name</th>
-                <th>Characteristics</th>
-                <th>Category</th>
-                <th class="col-1" sec:authorize="hasAnyAuthority('MANAGER')"></th>
-                <th class="col-1" sec:authorize="hasAnyAuthority('MANAGER')"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="product : ${products}">
-                <td th:text="${product.id}"></td>
-                <td th:text="${product.name}"></td>
-                <td th:text="${product.characteristics}"></td>
-                <th th:text="${categories.get(product.categoryId).name}"></th>
-                <td class="not-printable" sec:authorize="hasAnyAuthority('MANAGER')">
-                    <a class="btn btn-warning" th:href="@{/product/edit/{id}(id=${product.id})}">Edit</a>
-                </td>
-                <td class="not-printable" sec:authorize="hasAnyAuthority('MANAGER')">
-                    <a class="btn btn-danger" th:href="@{/product/delete/{id}(id=${product.id})}">Delete</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+    <table class="table  table-hover" id="report-table">
+        <thead>
+        <tr>
+            <th class="col-1">#</th>
+            <th>Name</th>
+            <th>Characteristics</th>
+            <th>Category</th>
+            <th class="col-1" sec:authorize="hasAnyAuthority('MANAGER')"></th>
+            <th class="col-1" sec:authorize="hasAnyAuthority('MANAGER')"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${products}" th:id="${'row-' + product.id}">
+            <td th:text="${product.id}"></td>
+            <td th:text="${product.name}"></td>
+            <td th:text="${product.characteristics}"></td>
+            <th><a th:href="@{/category#row-} + ${product.categoryId}"
+                   th:text="${categories.get(product.categoryId).name}"></a></th>
+            <td class="not-printable" sec:authorize="hasAnyAuthority('MANAGER')">
+                <a class="btn btn-warning" th:href="@{/product/edit/{id}(id=${product.id})}">Edit</a>
+            </td>
+            <td class="not-printable" sec:authorize="hasAnyAuthority('MANAGER')">
+                <a class="btn btn-danger" th:href="@{/product/delete/{id}(id=${product.id})}">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 
 
