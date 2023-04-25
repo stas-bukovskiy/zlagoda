@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <title>Zlagoda</title>
 
@@ -10,14 +11,89 @@
 
 <div th:replace="~{fragments/header::header}"></div>
 
-<div class="container flex-grow-1">
+<div class="flex-grow-1 container-fluid my-5">
 
-    <div class="starter-template">
-        <h1>Coming soon...</h1>
+    <h1 class="text-center">Zlagoda Statistics</h1>
+
+    <div class="container my-5">
+        <h3>The best-selling products for a period of time.</h3>
+        <h4 class="text-muted"> (From: 2023-01-01 00:00:00, to: 2023-04-27 23:59:59)</h4>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Product Name</th>
+                <th>Total sale</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="product : ${bestSellingProducts}">
+                <td th:text="${productStat.index}"></td>
+                <td th:text="${product.key}"></td>
+                <td th:text="${product.value}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="container-fluid my-5 pt-5">
+        <div class="container">
+            <h3>Cashiers which never had any sales.</h3>
+        </div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Patronymic</th>
+                <th>Role</th>
+                <th>Salary</th>
+                <th>Date of birth</th>
+                <th>Date of start</th>
+                <th>Phone number</th>
+                <th>City</th>
+                <th>Street</th>
+                <th>Zip code</th>
+                <th></th>
+                <th sec:authorize="hasAnyAuthority('MANAGER')"></th>
+                <th sec:authorize="hasAnyAuthority('MANAGER')"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="employee : ${cashiersWithoutSales}">
+                <td th:text="${employee.username}"></td>
+                <td th:text="${employee.name}"></td>
+                <td th:text="${employee.surname}"></td>
+                <td th:text="${employee.patronymic}"></td>
+                <td th:text="${employee.role}"></td>
+                <td th:text="${employee.salary}"></td>
+                <td th:text="${employee.dateOfBirth}"></td>
+                <td th:text="${employee.dateOfStart}"></td>
+                <td th:text="${employee.phoneNumber}"></td>
+                <td th:text="${employee.city}"></td>
+                <td th:text="${employee.street}"></td>
+                <td th:text="${employee.zipCode}"></td>
+                <td class="not-printable">
+                    <a class="btn btn-success" th:href="@{/employee/view/{id}(id=${employee.id})}">View</a>
+                </td>
+                <td class="not-printable" sec:authorize="hasAnyAuthority('MANAGER')">
+                    <a class="btn btn-warning" th:href="@{/employee/edit/{id}(id=${employee.id})}">Edit</a>
+                </td>
+                <td class="not-printable" sec:authorize="hasAnyAuthority('MANAGER')">
+                    <a class="btn btn-danger"
+                       th:href="@{/employee/delete/{id}(id=${employee.id})}"
+                       th:if="${#authentication.name!=employee.username}">Delete</a>
+                    <a class="btn btn-danger disabled"
+                       disabled href="#" th:if="${#authentication.name==employee.username}">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
 </div>
-<!-- /.container -->
 
 <div th:replace="~{fragments/footer::footer}"></div>
 
