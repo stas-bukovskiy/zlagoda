@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+>
 <head>
     <title>Zlagoda</title>
 
@@ -10,14 +11,102 @@
 
 <div th:replace="~{fragments/header::header}"></div>
 
-<div class="container flex-grow-1">
+<div class="flex-grow-1 container-fluid my-5">
 
-    <div class="starter-template">
-        <h1>Coming soon...</h1>
+    <h1 class="text-center">Zlagoda Statistics</h1>
+
+    <div class="container my-5">
+        <h4>Calculating the average check for each of the five most popular product categories in a given time
+            period</h4>
+        <h5 class="text-muted"> (From: 2023-04-01 08:00:00, to: 2024-04-01 08:00:00)</h5>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Category Name</th>
+                <th>Average check</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="averageCheck : ${averageChecks}">
+                <td th:text="${averageCheckStat.index}"></td>
+                <td th:text="${averageCheck.key}"></td>
+                <td th:text="${averageCheck.value}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="container my-5 pt-5">
+        <div class="card text-center mt-5">
+            <div class="card-header">
+                <h4>Find employees, who did not sell any products of the specified category</h4>
+            </div>
+            <div class="card-body">
+
+                <form method="get" th:action="@{/home}">
+                    <div class="form-group">
+                        <label for="category_id">Specify Category: </label>
+                        <select class="form-select my-3" id="category_id" name="category_id">
+                            <option selected th:each="category : ${categories}" th:text="${category.name}"
+                                    th:value="${category.id}"></option>
+                        </select>
+                        <div class="d-flex justify-content-center py-3">
+                            <button class="btn btn-success btn-lg me-5" type="submit">Search</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${unsuccessfulCashiers != null}" class="container-fluid my-5 pt-5">
+        <div class="container">
+            <h4 th:text="${'Cashiers who did not sell any products of the category ' + category.name}"></h4>
+        </div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Patronymic</th>
+                <th>Role</th>
+                <th>Salary</th>
+                <th>Date of birth</th>
+                <th>Date of start</th>
+                <th>Phone number</th>
+                <th>City</th>
+                <th>Street</th>
+                <th>Zip code</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="employee : ${unsuccessfulCashiers}">
+                <td th:text="${employee.username}"></td>
+                <td th:text="${employee.name}"></td>
+                <td th:text="${employee.surname}"></td>
+                <td th:text="${employee.patronymic}"></td>
+                <td th:text="${employee.role}"></td>
+                <td th:text="${employee.salary}"></td>
+                <td th:text="${employee.dateOfBirth}"></td>
+                <td th:text="${employee.dateOfStart}"></td>
+                <td th:text="${employee.phoneNumber}"></td>
+                <td th:text="${employee.city}"></td>
+                <td th:text="${employee.street}"></td>
+                <td th:text="${employee.zipCode}"></td>
+                <td class="not-printable">
+                    <a class="btn btn-success" th:href="@{/employee/view/{id}(id=${employee.id})}">View</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
 </div>
-<!-- /.container -->
 
 <div th:replace="~{fragments/footer::footer}"></div>
 
