@@ -26,5 +26,7 @@ public interface StoreProductRepository extends Repository<StoreProduct, String>
     boolean existsByProductId(Long id);
 
     boolean existsByProductIdAndUpcIsNot(Long productId, String upc);
+
+    boolean isPromotionalByUpc(String upc);
 }
 

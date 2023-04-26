@@ -156,7 +156,8 @@ public class CheckController {
     @PostMapping("/new")
     public String createCheck(@ModelAttribute @Valid CheckDto checkDto,
                               BindingResult bindingResult, Model model) {
-        checkService.checkAvailability(checkDto).forEach(bindingResult::addError);
+        if (checkDto.getSales() != null)
+            checkService.checkAvailability(checkDto).forEach(bindingResult::addError);
         if (bindingResult.hasErrors()) {
             model.addAttribute("check", checkDto);
             addDefaultAttributes(model);

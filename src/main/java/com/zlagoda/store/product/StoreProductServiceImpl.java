@@ -190,6 +190,8 @@ public class StoreProductServiceImpl implements StoreProductService {
     @Override
     public List<FieldError> checkProductIdToUpdate(StoreProductDto storeProductDto) {
         List<FieldError> errors = new ArrayList<>();
+        if (repository.isPromotionalByUpc(storeProductDto.getUpc()))
+            return errors;
         if (storeProductDto.getProduct() == null || storeProductDto.getProduct().getId() == null)
             errors.add(new FieldError("Store product", "product", "Product can not be null"));
         if (repository.existsByProductIdAndUpcIsNot(storeProductDto.getProduct().getId(), storeProductDto.getUpc()))

@@ -24,7 +24,7 @@
             const newTable = document.createElement('table');
             newTable.className = table.className; // copy the classes from the original table
 
-            newTable.classList.add('table', '', 'table-hover');
+            newTable.classList.add('table', 'table-hover');
 
             const originalHeader = table.querySelector('thead');
             if (originalHeader) {
@@ -65,12 +65,13 @@
                     const newSalesRow = document.createElement('tr');
                     const saleTable = createSalesTable(checks[i], storeProducts);
                     const newSellsCell = document.createElement('td');
-                    newSellsCell.setAttribute("colspan", 4);
-                    newSalesRow.appendChild(saleTable);
-                    newSalesRow.appendChild(document.createElement('td'));
-                    newSalesRow.appendChild(document.createElement('td'));
-                    newSalesRow.appendChild(document.createElement('td'));
+                    newSellsCell.setAttribute("colspan", "4");
+                    newSellsCell.appendChild(saleTable);
                     newSalesRow.appendChild(newSellsCell);
+
+                    newSalesRow.appendChild(document.createElement('td'));
+                    newSalesRow.appendChild(document.createElement('td'));
+                    newSalesRow.appendChild(document.createElement('td'));
                     newBody.appendChild(newSalesRow);
                 }
 
@@ -140,10 +141,7 @@
 
             table.appendChild(tbody);
 
-            const container = document.createElement("div");
-            container.classList.add("container-fluid");
-            container.appendChild(table);
-            return container;
+            return table;
         }
     </script>
 </div>
