@@ -229,7 +229,7 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
         String sql = """
                 SELECT products_number
                 FROM store_product
-                WHERE upc = ?
+                WHERE upc = ?;
                 """;
         Integer productsNumber = jdbcTemplate.queryForObject(sql, Integer.class, upc);
         return productsNumber == null ? Optional.empty() : Optional.of(productsNumber);
@@ -296,6 +296,19 @@ public class StoreProductRepositoryImpl implements StoreProductRepository {
         if (count == null)
             return false;
         return count > 0;
+    }
+
+    @Override
+    public boolean isPromotionalByUpc(String upc) {
+        String sql = """
+                SELECT promotional_product
+                FROM store_product
+                WHERE upc = ?
+                """;
+        Boolean isPromotional = jdbcTemplate.queryForObject(sql, Boolean.class, upc);
+        if (isPromotional == null)
+            return false;
+        return isPromotional;
     }
 
 }

@@ -38,6 +38,7 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
+                            <li><a class="dropdown-item" th:href="@{/employee/me}">Me</a></li
                             <li sec:authorize="hasAnyAuthority('MANAGER')"><a class="dropdown-item"
                                                                               th:href="@{/employee/cashiers}">Cashiers</a>
                             </li>
